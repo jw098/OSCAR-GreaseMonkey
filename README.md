@@ -6,7 +6,7 @@ GreaseMonkey scripts for OSCAR EMR
 
 Before installation, ensure the GreaseMonkey/Tampermonkey extension has been installed for Firefox/Chrome respectively.
 
-Installation:
+**Installation:**
 
 - Click the desired script on this GitHub page. 
 
@@ -14,7 +14,7 @@ Installation:
 
 - On the popup page, click Install
 
-Alternatively, to install manually:
+**Alternatively, to install manually:**
 
 - Click the desired script on this GitHub page. 
 
