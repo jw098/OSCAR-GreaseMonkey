@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name           KeyboardShortcuts_EChart7
+// @name           KeyboardShortcuts_EChart8
 // @namespace      oscar
 // @include        */casemgmt/forward.jsp?action=view&*
 // @include        */oscarRx/choosePatient.do*
@@ -71,7 +71,7 @@ function eChartPageHotkeys(theEvent){
 			theTarget.click();
 			break;
 		case theAltKey && theKey == medicationHotkey:  // Medications
-			var theTarget = document.evaluate("//div[@id='menuTitleRx ']/h3/a",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+			var theTarget = document.evaluate("//div[@id='Rx']/div/div/h3/a",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
 			theTarget.click();
 			break;
 		case theAltKey && theKey == eFormsHotkey:  // eForms
