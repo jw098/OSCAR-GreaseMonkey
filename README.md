@@ -1,6 +1,8 @@
 # OSCAR-GreaseMonkey
 GreaseMonkey scripts for OSCAR EMR
 
+# How to install the GreaseMonkey scripts
+
 # Billing Screen Buttons
 On the BC Billing page, buttons to automatically bill age-related codes and other common codes. 
 
