@@ -8,9 +8,7 @@
 // @grant       none
 // ==/UserScript==
 
-// var thetarget = document.evaluate('id("providerschedule")/tbody//td[a[img[not(contains(string(@src),"cancel")) and not(contains(string(@src),"noshow"))]]]',document,null,xpathresult.first_ordered_node_type,null).singlenodevalue;
-
-// thelinks=thetarget.getelementsbytagname('a');
+// filter out title: "No Show", "signed"
 
 window.addEventListener('keydown', function(theEvent) {
 	var theKey = theEvent.key;    
@@ -18,34 +16,11 @@ window.addEventListener('keydown', function(theEvent) {
     var theCtrlKey = theEvent.ctrlKey;
     var theShiftKey= theEvent.shiftKey;
     switch(true){
-        case theAltKey && theKey == 'z':
-			// console.log('hi')
-			// const allAppts = document.querySelectorAll('#providerSchedule > tbody:nth-child(1) > tr > td:nth-child(3) > ');
-			// // console.log(allAppts);
-			// let firstPendingAppt = findFirstPendingAppt(allAppts);
-			
-			
-			
-			console.log('hi');
-			// var theTarget = document.evaluate('id("providerSchedule")/tbody//td[a[img[not(contains(string(@src),"cancel")) and not(contains(string(@src),"noshow"))]]]',document,null,XPathResult.ORDERED_NODE_ITERATOR_TYPE ,null);
-			var theTarget = document.evaluate('id("providerSchedule")/tbody//td[a[img[not(contains(string(@src),"cancel")) and not(contains(string(@src),"noshow"))]]]/a[@title="Encounter"]',document,null,XPathResult.FIRST_ORDERED_NODE_TYPE ,null).singleNodeValue;
-					
-			console.log(theTarget);
-			// console.log(theTarget.iterateNext());
-			// console.log(theTarget.iterateNext());
-			// console.log(theTarget.iterateNext());
-            // var theTargetLink = document.evaluate('.//a[contains(.,"|") and contains(.,"E")]',theTarget,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
-			
-			// // console.log(theTargetLink);
-            // theTargetLink.click();
+        case theAltKey && theKey == '1':
+		// gets filtered td element where the icon image doesn't contain "cancel" or "noshow". billed items are filtered out as well because the billing image is not located in the structure td/a/img. the XPATH then goes on to select the Encounter node.
+			const xpath = 'id("providerSchedule")/tbody//td[a[img[not(contains(string(@src),"cancel")) and not(contains(string(@src),"noshow"))]]]/a[@title="Encounter"]';
+			var theTarget = document.evaluate(xpath,document,null,XPathResult.FIRST_ORDERED_NODE_TYPE ,null).singleNodeValue;            theTarget.click();
             break;
-        /*
-        case theAltKey && theCtrlKey && theShiftKey && theKey=='':
-            //TO DO: The action to be performed for the above keyboard shortcut
-            break;#providerSchedule > tbody:nth-child(1) > tr:nth-child(50)
-        */
-		
-		//'id("providerSchedule")/tbody//td[a[img[not(contains(string(@src),"cancel")) and not(contains(string(@src),"noshow"))]]]'
     }
 }, true);
 
