@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name           LabLabler2
+// @name           LabLabler3
 // @namespace      oscar
 // @include        */lab/CA/ALL/labDisplay*
 // @include        */dms/inboxManage*
@@ -11,7 +11,7 @@
 // created by Darius Opensource
 
 // don't set label if REFER1
-(function(){
+
 document.addEventListener('keydown', function(theEvent) {
 	var theKey = theEvent.key;
 	var theAltKey = theEvent.altKey;
@@ -24,7 +24,8 @@ document.addEventListener('keydown', function(theEvent) {
 			break;      
 	}
 }, true);
-})();
+
+
 
 
 function labelLabs(){
@@ -35,6 +36,19 @@ function labelLabs(){
 	$("input[id*=acklabel]").val(keyLabResults);
 	$("button[id*=createLabel]").click()
 	console.log(keyLabResults);
+	
+	showKeyLabResultsTextBox(keyLabResults);
+
+}
+
+// Show the key lab results in a button in the bottom right screen
+function showKeyLabResultsTextBox(keyLabResults){
+	let labResultsTextBox = document.createElement("input");
+	labResultsTextBox.type="button";
+	labResultsTextBox.value=keyLabResults;
+
+	labResultsTextBox.setAttribute("style", "font-size:10px; position:fixed; bottom:10px; right:10px; cursor:pointer; background-color: #F2EFFB; ");
+	document.body.appendChild(labResultsTextBox); 
 }
 
 function extractKeyLabResults(allLabResults){
@@ -45,7 +59,7 @@ function extractKeyLabResults(allLabResults){
 		function(e){			
 			if (!isSubResult(e)){  // add all non sub-results. i.e. add all key results.
 				let labTitle = renameLabResult(e.textContent);  // join to convert array to string.
-				if(index>0 && labTitle != ""){
+				if(keyLabResultList != "" && labTitle != ""){
 					labTitle = "/" + labTitle;
 				}				
 				keyLabResultList += labTitle;
@@ -141,10 +155,10 @@ function renameLabResult(strOldName){
 			strNewName='fT3';
 			break;
 		case 'Urine Culture':
-			strNewName='UrCultr';
+			strNewName='UrineCultr';
 			break;
 		case 'Genital Culture':
-			strNewName='GenitCultr';
+			strNewName='GenitalCultr';
 			break;
 		case 'Throat Culture':
 			strNewName='ThroatCultr';
@@ -166,7 +180,10 @@ function renameLabResult(strOldName){
 			break;
 		case 'Calcium':
 			strNewName='Ca';
-			break;		
+			break;
+		case 'Phosphate':
+			strNewName='Phos';
+			break;			
 		case 'Magnesium':
 			strNewName='Mg';
 			break;
@@ -222,7 +239,7 @@ function renameLabResultInexactMatch(strOldName){
 		case strOldName.includes('Vagina'):
 			strNewName='VagSwab';
 			break;
-		case strOldName.includes('difficile'):
+		case strOldName.includes('difficile') || strOldName.includes('Difficile'):
 			strNewName='C.Diff';
 			break;		
 		case strOldName.includes('Ova and Parasite'):
@@ -249,9 +266,36 @@ function renameLabResultInexactMatch(strOldName){
 		case strOldName.includes('Trichomonas'):
 			strNewName='Trich';
 			break;	
-		case strOldName.includes('asdf'):
-			strNewName='asdf';
+		case strOldName.includes('Transglutaminase'):
+			strNewName='anti-TTG';
 			break;	
+		case strOldName.includes('Herpes'):
+			strNewName='HSV';
+			break;	
+		case strOldName.includes('genitalium'):
+			strNewName='M.Genitalium';
+			break;	
+		case strOldName.includes('Parathyroid'):
+			strNewName='PTH';
+			break;
+		case strOldName.includes('Trichomonas'):
+			strNewName='Trich';
+			break;
+		case strOldName.includes('Trichomonas'):
+			strNewName='Trich';
+			break;
+		case strOldName.includes('Trichomonas'):
+			strNewName='Trich';
+			break;
+		case strOldName.includes('Trichomonas'):
+			strNewName='Trich';
+			break;
+		case strOldName.includes('Trichomonas'):
+			strNewName='Trich';
+			break;
+		case strOldName.includes('Trichomonas'):
+			strNewName='Trich';
+			break;			
 		default:
 			break;
 	}
