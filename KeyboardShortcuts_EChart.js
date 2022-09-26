@@ -1,7 +1,8 @@
 // ==UserScript==
-// @name           KeyboardShortcuts_EChart6
+// @name           KeyboardShortcuts_EChart7
 // @namespace      oscar
 // @include        */casemgmt/forward.jsp?action=view&*
+// @include        */oscarRx/choosePatient.do*
 // @include        */eform/efmformslistadd.jsp*
 // @include        */oscarConsultationRequest/ConsultationFormRequest.jsp*
 // @include        */tickler/ticklerAdd.jsp*
@@ -10,6 +11,12 @@
 // ==/UserScript==
 
 // created by Darius Opensource
+
+const medicationHotkey = 'q';
+const consultationHotkey = 'w';
+const eFormsHotkey = 'a';
+const ticklerHotkey = 'z';
+
 
 (function(){
 document.addEventListener('keydown', function(theEvent) {
@@ -21,9 +28,9 @@ document.addEventListener('keydown', function(theEvent) {
 	const theAltKey = theEvent.altKey;
 	const theCtrlKey = theEvent.ctrlKey;
 	const theShiftKey= theEvent.shiftKey;
-  
-  
+    
 	let currentURL = window.location.href;
+	const medPage = /oscarRx\/choosePatient\.do/
 	const eChartPage = /casemgmt\/forward\.jsp\?action\=view\&/;
 	const eFormsPage = /eform\/efmformslistadd\.jsp/;
 	const consultationPage = /oscarConsultationRequest\/ConsultationFormRequest\.jsp/;
@@ -35,14 +42,17 @@ document.addEventListener('keydown', function(theEvent) {
 	switch(true){
 		case eChartPage.test(currentURL):
 			eChartPageHotkeys(theEvent);
+			break;
+		case medPage.test(currentURL) && theAltKey && theKey == medicationHotkey:	// If on Medications page, hotkey to close window.
+			window.close();
 			break;			
-		case eFormsPage.test(currentURL) && theAltKey && theKey == 'q':			// If on eForms page, Alt+Q to close eForms.
+		case eFormsPage.test(currentURL) && theAltKey && theKey == eFormsHotkey:	// If on eForms page, hotkey to close window.
 			window.close();
 			break;
-		case consultationPage.test(currentURL) && theAltKey && theKey == 'w':	// If on Consultation page, Alt+W to close Consultation.
+		case consultationPage.test(currentURL) && theAltKey && theKey == consultationHotkey:	// If on Consultation page, hotkey to close window.
 			window.close();
 			break;
-		case ticklerPage.test(currentURL) && theAltKey && theKey == 'a':		// If on Ticklers page, Alt+A to close Ticklers.
+		case ticklerPage.test(currentURL) && theAltKey && theKey == ticklerHotkey:		// If on Ticklers page, hotkey to close window.
 			window.close();
 			break;		
 	}
@@ -59,16 +69,20 @@ function eChartPageHotkeys(theEvent){
 		case theAltKey && theKey == 1:  // Sign, Save, and Bill
 			var theTarget = document.evaluate("id('save')/span/input[contains(@src,'dollar-sign-icon.png')]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
 			theTarget.click();
-			break;					
-		case theAltKey && theKey == 'q':  // eForms
+			break;
+		case theAltKey && theKey == medicationHotkey:  // Medications
+			var theTarget = document.evaluate("//div[@id='menuTitleRx ']/h3/a",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+			theTarget.click();
+			break;
+		case theAltKey && theKey == eFormsHotkey:  // eForms
 			var theTarget = document.evaluate("//div[@id='menuTitleeforms ']/h3/a",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
 			theTarget.click();
 			break;
-		case theAltKey && theKey == 'w':  // Consultation			
+		case theAltKey && theKey == consultationHotkey:  // Consultation			
 			var theTarget = document.evaluate("//div[@id='menuTitleconsultation ']/h3/a",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
 			theTarget.click();
 			break;  //"id('menuTitleconsultation ')/h3/a"  //"id('consultation')/div/div[2]/h3/a"  /html/body/div/div/div[4]/div[10]/div/div[2]/h3/a
-		case theAltKey && theKey == 'a':  // Tickler
+		case theAltKey && theKey == ticklerHotkey:  // Tickler
 			var theTarget = document.evaluate("//div[@id='menuTitletickler ']/h3/a",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
 			theTarget.click();
 			break;
