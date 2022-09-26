@@ -1,10 +1,12 @@
 // ==UserScript==
-// @name           KeyboardShortcuts_BCBilling7
+// @name           KeyboardShortcuts_BCBilling8
 // @namespace      oscar
-// @include        *billing.do?bill*
-// @include        *oscar/CaseManagementEntry*
-// @include        *billing/CA/BC/billingDigNewSearch.jsp?*
-// @include        *billing/CA/BC/CreateBilling*
+// @include        	*billing.do?bill*
+// @include        	*oscar/CaseManagementEntry*
+// @include        	*billing/CA/BC/billingBC.jsp*
+// @include			*SaveBilling.do*
+// @include        	*billing/CA/BC/billingDigNewSearch.jsp?*
+// @include        	*billing/CA/BC/CreateBilling*
 // @description		In the BC Billing page: Alt+1 to Continue, Alt+Q to input in person visit billing code, Alt+W to input telehealth visit billing code, Alt+A to set focus to Dx code. In Diagnostic Code search: Alt+1 to Confirm, Escape to Cancel. In Billing confirmation page: Alt+1 to Save Bill.
 // @grant	   none
 // ==/UserScript==
