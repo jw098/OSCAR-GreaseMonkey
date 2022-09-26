@@ -1,11 +1,11 @@
 // ==UserScript==
-// @name           KeyboardShortcuts_BCBilling6
+// @name           KeyboardShortcuts_BCBilling7
 // @namespace      oscar
 // @include        *billing.do?bill*
 // @include        *oscar/CaseManagementEntry*
 // @include        *billing/CA/BC/billingDigNewSearch.jsp?*
 // @include        *billing/CA/BC/CreateBilling*
-// @description		In the BC Billing page: Alt+1 to Continue, Alt+Q to input in person visit billing code, Alt+W to input telehealth visit billing code. In Diagnostic Code search: Alt+1 to Confirm, Escape to Cancel. In Billing confirmation page: Alt+1 to Save Bill.
+// @description		In the BC Billing page: Alt+1 to Continue, Alt+Q to input in person visit billing code, Alt+W to input telehealth visit billing code, Alt+A to set focus to Dx code. In Diagnostic Code search: Alt+1 to Confirm, Escape to Cancel. In Billing confirmation page: Alt+1 to Save Bill.
 // @grant	   none
 // ==/UserScript==
 
@@ -28,32 +28,39 @@ document.addEventListener('keydown', function(theEvent) {
 	const dxCodeSearch = /billing\/CA\/BC\/billingDigNewSearch.jsp/;
 	const billingConf = /billing\/CA\/BC\/CreateBilling/;
   	
-	switch(true){
-		case  (!!document.getElementById("billingFormTable") &&		// If in BC Billing page, whose XML contains id = "billingFormtable"
-				theAltKey && theKey == 1):  						// Alt+1 to Continue.
-			var theTarget = document.evaluate("id('buttonRow')/td/input[@value='Continue']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
-			theTarget.click();
+	switch(true){		
+		case  (!!document.getElementById("billingFormTable")):  // If in BC Billing page, whose XML contains id = "billingFormtable"
+			switch(true){
+				case  (theAltKey && theKey == 1):				// Alt+1 to Continue.
+					var theTarget = document.evaluate("id('buttonRow')/td/input[@value='Continue']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+					theTarget.click();
+					break;
+				case  (theAltKey && theKey == 'q'):				// Alt+Q to input Office visit code.
+					inPersonVisit();
+					break;
+				case  (theAltKey && theKey == 'w'):				// Alt+W to input Telehealth visit code.
+					virtualVisit();
+					break;
+				case  (theAltKey && theKey == 'a'):				// Alt+A to set focus to Diagnostic code (row 1).
+					$("input[name=billing_1_fee_dx1]").focus();
+					break;
+			}
 			break;
-		case  (!!document.getElementById("billingFormTable") &&		// If in BC Billing page, whose XML contains id = "billingFormtable"
-				theAltKey && theKey == 'q'):  						// Alt+Q to input Office visit code.
-			inPersonVisit()
+		case (!!document.getElementById("servicecode")):		// If in Diagnostic Code search, whose XML contains id = "servicecode"
+			switch(true){				
+				case (theAltKey && theKey ==  1):				// Alt+1 to Confirm.
+					var theTarget = document.evaluate("id('servicecode')/input[@value='Confirm']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+					theTarget.click();
+					break;	
+				case (theKey == "Escape"):						// Escape to Cancel. 
+					// alert("dxCodeSearch");
+					var theTarget = document.evaluate("id('servicecode')/input[@value='Cancel']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+					theTarget.click();
+					break;	
+			}
 			break;
-		case  (!!document.getElementById("billingFormTable") &&		// If in BC Billing page, whose XML contains id = "billingFormtable"
-				theAltKey && theKey == 'w'):  						// Alt+W to input Telehealth visit code.
-			virtualVisit()
-			break;
-		case (!!document.getElementById("servicecode") &&	// If in Diagnostic Code search, whose XML contains id = "servicecode"
-				theAltKey && theKey ==  1):					// Alt+1 to Confirm.
-			var theTarget = document.evaluate("id('servicecode')/input[@value='Confirm']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
-			theTarget.click();
-			break;	
-		case (!!document.getElementById("servicecode") &&	// If in Diagnostic Code search, whose XML contains id = "servicecode"
-				theKey == "Escape"):						// Escape to Cancel. 
-			// alert("dxCodeSearch");
-			var theTarget = document.evaluate("id('servicecode')/input[@value='Cancel']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
-			theTarget.click();
-			break;	
-		case (document.getElementsByName("BillingSaveBillingForm").length > 0	//  Check if in in Billing confirmation page. XML contains name = "BillingSaveBillingForm"
+		case (document.getElementsByName("BillingSaveBillingForm").length > 0	//  Check if in in Billing confirmation page. 
+																				// XML contains name = "BillingSaveBillingForm"
 				&& theAltKey && theKey == 1):									// Alt+1 to Save Bill. 
 			// alert("billingConf");
 			var theTarget = document.evaluate("//input[@value='Save Bill']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
@@ -70,10 +77,6 @@ document.addEventListener('keydown', function(theEvent) {
 		/html/body/form/table[2]/tbody/tr/td/table[3]/tbody/tr/td/table[3]/tbody/tr[2]/td/input[3]
 		/html/body/form/table[2]/tbody/tr/td/table[3]/tbody/tr/td/table[3]/tbody/tr[2]/td/input[contains(@value, 'Save Bill')]
 				
-		//*[@id="saveImg"]
-		case theAltKey && theCtrlKey && theShiftKey && theKey=='':
-			//TO DO: The action to be performed for the above keyboard shortcut
-			break;
 		*/
 	}
 }, true);
