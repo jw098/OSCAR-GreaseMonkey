@@ -1,133 +1,32 @@
 // ==UserScript==
-// @name           KeyboardShortcuts_Inbox4
+// @name           LabLabler
 // @namespace      oscar
 // @include        */lab/CA/ALL/labDisplay*
 // @include        */dms/inboxManage*
 // @include        */dms/showDocument*
-// @include        */tickler/ForwardDemographicTickler*
-// @include        */dms/MultiPageDocDisplay.jsp*
-// @description		Within Inbox: Alt+1 to open first item. Within the Lab result: Alt+1 to Acknowledge and label Labs. Alt+Q to open E-chart. Alt+W to open Tickler. Alt+Z to only label Labs. Within the Tickler: Alt+W to close Tickler, Alt+1 to Submit and EXIT, Alt+2 to Submit & Write to Encounter, Alt+A to set focus to text box.
-// @require   https://ajax.googleapis.com/ajax/libs/jquery/1.3.1/jquery.min.js
+// @description		Labels lab results.
 // @grant	   none
 // ==/UserScript==
 
 // created by Darius Opensource
 
-(function(){
+// don't set label if REFER1
+
 document.addEventListener('keydown', function(theEvent) {
-	//theEvent.stopPropagation();
-	//theEvent.preventDefault();
-	// var theKeyCode = theEvent.charCode;// || event.which;
-	// var theKey = String.fromCharCode(theKeyCode);
 	var theKey = theEvent.key;
 	var theAltKey = theEvent.altKey;
 	var theCtrlKey = theEvent.ctrlKey;
 	var theShiftKey= theEvent.shiftKey;
-  
-	let currentURL = window.location.href;
-	const labResultPage = /lab\/CA\/ALL\/labDisplay/
-	const ticklerPage = /tickler\/ForwardDemographicTickler/
-	const documentPage = /dms\/showDocument/
-	
-	switch(true){
-		case (!!document.getElementById("docViews") &&	// If in the inbox, whose XML contains id = "docViews"
-				theAltKey && theKey == 1):  			// Alt+1: Open first item in inbox						
-			getNextTarget().click();
-			console.log("test")
-			break;
-		case (labResultPage.test(currentURL) || documentPage.test(currentURL)): // If in the Lab/Document result page
-			switch(true){
-				case (theAltKey && theKey == 1):			// Alt+1: Acknowledge the result.
-					if (labResultPage.test(currentURL)){	// if in lab result page: label lab results.
-						labelLabs();	
-					}					
-					var theTarget = document.evaluate("//input[@value='Acknowledge']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
-					theTarget.click();					
-					break;		
-				case (theAltKey && theKey == 'q'):  							// Alt+Q: open E-chart
-					var theTarget = document.evaluate("//input[contains(@value, 'E-Chart')]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
-					theTarget.click();
-					break;
-				case (theAltKey && theKey == 'w'):  							// Alt+W: open Tickler
-					var theTarget = document.evaluate("//input[@value='Tickler']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
-					theTarget.click();
-// 					$( document ).ready(function() {
-
-
-// 						// var winOpen = window.open;
-// 						// window.open = function() {
-// 						//     var win = winOpen.apply(this, arguments);
-// 						//     console.log(win);
-// 						//     console.log("hi");
-// 						//     // windows.push(win);
-// 						//     // return win;
-// 						// }
-// ;						
-// 						$('input[value=Tickler]').click(function(event) {
-// 							  	console.log($(event.target));
-// 							  	window.blur;							  	
-// 							  	console.log(window.location.href);
-							  	
-// 							  	// console.log($('div').html(event.target.href));
-// 	    					// 	console.log($(this).attr('href'));
-// 							});
-// 						$('input[value=Tickler]').click();
-						
-					
-// 						// let windowList = windows.getAll();
-// 						// console.log(windowList);
-						
-// 					});
-
-					break;
-				case (labResultPage.test(currentURL) && theAltKey && theKey == 'z'):  // Alt+Z: if in lab result page: label lab results.
-					labelLabs();	
-					break;   					
-			}
-			break;
-		case (ticklerPage.test(currentURL)):
-			switch (true){
-				case (theAltKey && theKey == 'w'):			// If Tickler page open. Alt+W to close it.
-					window.close();
-					break;
-				case theAltKey && theKey == 1:
-					var theTarget = document.evaluate("//input[@value='Submit and EXIT']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
-					theTarget.click();
-					break;
-				case theAltKey && theKey == 2:
-					var theTarget = document.evaluate("//input[@value='Submit & Write to Encounter']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
-					theTarget.click();
-					break;
-				case theAltKey && theKey == 'a':
-					var theTarget = document.evaluate("//textarea",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
-					theTarget.focus();
-					break;	
-			} 
-
+	switch(true){	
+		case (theAltKey && theKey == 'z'):  // for testing
+// 			console.log('hi');
+			labelLabs();	
+			break;      
 	}
 }, true);
-})();
 
-function getNextTarget() {
-	
-	const allInTBody = document.querySelectorAll('tbody[id="summaryBody"] > tr');
-	console.log(allInTBody);
-	let index = 1;
-	for (const element of allInTBody) {
-		// console.log(index);
-		const styleAttribute = element.getAttribute('style');
-		if (styleAttribute != 'display: none;'){  // Lab result not hidden. i.e not recently acknowledged.
-			break;
-		}
-    index++;
-	}
-	console.log(index);
-	
-	return document.evaluate("//tbody[@id='summaryBody']/tr[" + index + "]/td[2]/a",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
-}
-///////////////////////////////////////////////////////////////////////////////////////////
-// Label Labs. Automatically labels lab results.
-///////////////////////////////////////////////////////////////////////////////////////////
+
+
 
 function labelLabs(){
 
@@ -309,8 +208,8 @@ function renameLabResult(strOldName){
 		case 'Troponin':
 			strNewName='Trop';
 			break;	
-		case 'General Information':
-			strNewName='Gen Info';
+		case '':
+			strNewName='';
 			break;
 		case '':
 			strNewName='';
@@ -379,8 +278,8 @@ function renameLabResultInexactMatch(strOldName){
 		case strOldName.includes('Parathyroid'):
 			strNewName='PTH';
 			break;
-		case strOldName.includes('Troponin'):
-			strNewName='Trop';
+		case strOldName.includes('Trichomonas'):
+			strNewName='Trich';
 			break;
 		case strOldName.includes('Trichomonas'):
 			strNewName='Trich';

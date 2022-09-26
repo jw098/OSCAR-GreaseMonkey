@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name        EChartButtons8
+// @name        EChartButtons
 // @namespace   Stanscripts
 // @description Various navigation buttons for echart screen.  Set your own specific fid (form number) or Measurement groupName
 // @include     */casemgmt/forward.jsp?action=view&demographic*

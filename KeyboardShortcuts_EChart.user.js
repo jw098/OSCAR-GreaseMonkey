@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name           KeyboardShortcuts_EChart9
+// @name           KeyboardShortcuts_EChart
 // @namespace      oscar
 // @include        */casemgmt/forward.jsp?action=view&*
 // @include        */oscarRx/choosePatient.do*

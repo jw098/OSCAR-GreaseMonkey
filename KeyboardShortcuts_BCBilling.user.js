@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name           KeyboardShortcuts_BCBilling10
+// @name           KeyboardShortcuts_BCBilling
 // @namespace      oscar
 // @include        	*billing.do?bill*
 // @include        	*oscar/CaseManagementEntry*

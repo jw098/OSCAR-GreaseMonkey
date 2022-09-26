@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name           Schedule_KeyboardShortcuts4
+// @name           Schedule_KeyboardShortcuts
 // @namespace      oscar
 // @include        */provider/providercontrol.jsp?* 
 // @include        *provider/appointmentprovideradminday.jsp* 

@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name Billing Screen Buttons1
+// @name Billing Screen Buttons
 // @namespace   PMscripts
 // @description  Buttons to automatically bill age-related codes and other common codes. 
 // @include     *billing.do?billRegion=BC&billForm=*

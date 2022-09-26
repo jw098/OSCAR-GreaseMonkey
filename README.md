@@ -2,6 +2,25 @@
 GreaseMonkey scripts for OSCAR EMR
 
 # How to install the GreaseMonkey scripts
+To Install:
+
+- Click the desired script on this GitHub page. 
+
+- Click "Raw" 
+
+- On the popup page, click Install
+
+To Install manually:
+
+- Click the desired script on this GitHub page. 
+
+- Manually highlight and copy the desired script's code.
+
+- Click the GreaseMonkey icon in the Firefox toolbar
+
+- Click 'New user script'
+
+- Paste the desired script's code and overwrite the pre-written code in the new script.
 
 # Billing Screen Buttons
 On the BC Billing page, buttons to automatically bill age-related codes and other common codes. 
