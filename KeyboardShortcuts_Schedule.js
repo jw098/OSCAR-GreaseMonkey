@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name           Schedule_KeyboardShortcuts
+// @name           Schedule_KeyboardShortcuts4
 // @namespace      oscar
 // @include        */provider/providercontrol.jsp?* 
 // @include        *provider/appointmentprovideradminday.jsp* 
-// @description		Within the Schedule page: Alt + U gets the next patient.
+// @description		Within the Schedule page: Alt+1 gets the next patient. i.e. the first patient that is not Billed, not Signed, not No show, and not Cancelled.
 // @require   https://ajax.googleapis.com/ajax/libs/jquery/1.3.1/jquery.min.js
 // @grant       none
 // ==/UserScript==
@@ -17,8 +17,9 @@ window.addEventListener('keydown', function(theEvent) {
     var theShiftKey= theEvent.shiftKey;
     switch(true){
         case theAltKey && theKey == '1':
-		// gets filtered td element where the icon image doesn't contain "cancel" or "noshow". billed items are filtered out as well because the billing image is not located in the structure td/a/img. the XPATH then goes on to select the Encounter node.
-			const xpath = 'id("providerSchedule")/tbody//td[a[img[not(contains(string(@src),"cancel")) and not(contains(string(@src),"noshow"))]]]/a[@title="Encounter"]';
+			// Gets the first td element where the icon image doesn't contain "cancel" or "noshow" or "signed. Billed items are filtered out as well because the billing image is not located in the structure td/a/img, but rather td/img. The td element must also contain the Encounter node (e.g. not appointments such as LUNCH or DO_NOT_BOOK). The Encounter node is then selected.
+			// Note: Breaking the expression into two (e.g. get the td element first, then selecting the encounter element) doesn't work, as you need to specify that the td element contains the encounter element. Else, you select for appointments without enounters such as LUNCH or DO_NO_BOOK.
+			const xpath = 'id("providerSchedule")/tbody//td[a[img[not(contains(string(@src),"cancel")) and not(contains(string(@src),"noshow")) and not(contains(string(@title),"Signed"))]]]/a[@title="Encounter"]';
 			var theTarget = document.evaluate(xpath,document,null,XPathResult.FIRST_ORDERED_NODE_TYPE ,null).singleNodeValue;            theTarget.click();
             break;
     }
