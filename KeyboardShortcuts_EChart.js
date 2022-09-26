@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name           KeyboardShortcuts_EChart4
+// @name           KeyboardShortcuts_EChart5
 // @namespace      oscar
 // @include        */casemgmt/forward.jsp?action=view&*
 // @description		Within the E-chart: Alt+1 to Sign/Save/Bill. Alt+2 to Save. Alt+3 to Sign/Save. Alt+4 to Exit. Alt+W to open Consultation. Alt+Q to open eForms. Alt+A to open Ticklers.
@@ -23,17 +23,17 @@ document.addEventListener('keydown', function(theEvent) {
 		case theAltKey && theKey == 1:  // Sign, Save, and Bill
 			var theTarget = document.evaluate("id('save')/span/input[contains(@src,'dollar-sign-icon.png')]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
 			theTarget.click();
-			break;		
-		case theAltKey && theKey == 'w':  // Consultation	/html/body/div/div/div[4]/div[10]/div/div[2]/h3/a		
-			var theTarget = document.evaluate("id('consultation')/div/div[2]/h3/a",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
-			theTarget.click();
-			break;  //"id('menuTitleconsultation')/h3/a"
+			break;					
 		case theAltKey && theKey == 'q':  // eForms
-			var theTarget = document.evaluate("id('eforms')/div/div[2]/h3/a",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+			var theTarget = document.evaluate("//div[@id='menuTitleeforms ']/h3/a",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
 			theTarget.click();
 			break;
+		case theAltKey && theKey == 'w':  // Consultation			
+			var theTarget = document.evaluate("//div[@id='menuTitleconsultation ']/h3/a",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+			theTarget.click();
+			break;  //"id('menuTitleconsultation ')/h3/a"  //"id('consultation')/div/div[2]/h3/a"  /html/body/div/div/div[4]/div[10]/div/div[2]/h3/a
 		case theAltKey && theKey == 'a':  // Tickler
-			var theTarget = document.evaluate("id('tickler')/div/div[2]/h3/a",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+			var theTarget = document.evaluate("//div[@id='menuTitletickler ']/h3/a",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
 			theTarget.click();
 			break;
 		case theAltKey && theKey == 2:  // Save
