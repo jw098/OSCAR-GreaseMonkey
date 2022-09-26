@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name           KeyboardShortcuts_Inbox1
+// @name           KeyboardShortcuts_Inbox2
 // @namespace      oscar
 // @include        */lab/CA/ALL/labDisplay*
 // @include        */dms/inboxManage*
@@ -23,35 +23,34 @@ document.addEventListener('keydown', function(theEvent) {
   
 	switch(true){
 		case (!!document.getElementById("docViews") &&	// If in the inbox, whose XML contains id = "docViews"
-				theAltKey && theKey == 1):  			// open first item in inbox						
+				theAltKey && theKey == 1):  			// Alt+1: Open first item in inbox						
 			getNextTarget().click();
 			console.log("test")
 			break;
-		case (!!document.querySelectorAll('[id^=acknowledgeForm]') &&	// If in the Lab result, whose XML contains id = "acknowledgeForm"
-				theAltKey && theKey == 1):								// Acknowledge the result
-			var theTarget = document.evaluate("//input[@value='Acknowledge']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
-			theTarget.click();
-			break;		
-		case (!!document.querySelectorAll('[id^=acknowledgeForm]') &&	// If in the Lab result, whose XML contains id = "acknowledgeForm"
-				theAltKey && theKey == 'q'):  							// open E-chart
-			var theTarget = document.evaluate("//input[contains(@value, 'E-Chart')]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
-			theTarget.click();
+		case (!!document.querySelectorAll('[id^=acknowledgeForm]')): // If in the Lab result, whose XML contains id = "acknowledgeForm"
+			switch(true){
+				case (theAltKey && theKey == 1):								// Alt+1: Acknowledge the result
+					var theTarget = document.evaluate("//input[@value='Acknowledge']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+					theTarget.click();
+					break;		
+				case (theAltKey && theKey == 'q'):  							// Alt+Q: open E-chart
+					var theTarget = document.evaluate("//input[contains(@value, 'E-Chart')]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+					theTarget.click();
+					break;
+				case (theAltKey && theKey == 'w'):  							// Alt+W: open Tickler
+					var theTarget = document.evaluate("//input[@value='Tickler']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+					theTarget.click();
+					break;      
+			}
 			break;
-		case (!!document.querySelectorAll('[id^=acknowledgeForm]') &&	// If in the Lab result, whose XML contains id = "acknowledgeForm"
-				theAltKey && theKey == 'w'):  							// open Tickler
-			var theTarget = document.evaluate("//input[@value='Tickler']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
-			theTarget.click();
-			break;      
+		// case (theAltKey && theKey == 'z'):  // for testing
+			// // alert("hello");
+			// const allInTBody = document.querySelectorAll('tbody[id="summaryBody"] > tr');
+// // 			console.log(allInTBody);
+// //       console.log('hello');
+			// getNextTarget();			
+			// break;
       
-		case (theAltKey && theKey == 'z'):
-			// alert("hello");
-			const allInTBody = document.querySelectorAll('tbody[id="summaryBody"] > tr');
-// 			console.log(allInTBody);
-//       console.log('hello');
-			getNextTarget();			
-			break;
-
-      //'id('save')/span/input[contains(@src,'dollar-sign-icon.png')]'
 	}
 }, true);
 })();
