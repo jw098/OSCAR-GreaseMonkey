@@ -1,8 +1,11 @@
 // ==UserScript==
-// @name           KeyboardShortcuts_EChart5
+// @name           KeyboardShortcuts_EChart6
 // @namespace      oscar
 // @include        */casemgmt/forward.jsp?action=view&*
-// @description		Within the E-chart: Alt+1 to Sign/Save/Bill. Alt+2 to Save. Alt+3 to Sign/Save. Alt+4 to Exit. Alt+W to open Consultation. Alt+Q to open eForms. Alt+A to open Ticklers.
+// @include        */eform/efmformslistadd.jsp*
+// @include        */oscarConsultationRequest/ConsultationFormRequest.jsp*
+// @include        */tickler/ticklerAdd.jsp*
+// @description		Within the E-chart: Alt+1 to Sign/Save/Bill. Alt+2 to Save. Alt+3 to Sign/Save. Alt+4 to Exit. Alt+W, Alt+Q, Alt+A to open/close Consultation, eForms, Ticklers respectively.
 // @grant	   none
 // ==/UserScript==
 
@@ -14,11 +17,44 @@ document.addEventListener('keydown', function(theEvent) {
 	//theEvent.preventDefault();
 	// var theKeyCode = theEvent.charCode;// || event.which;
 	// var theKey = String.fromCharCode(theKeyCode);
-	var theKey = theEvent.key;
-	var theAltKey = theEvent.altKey;
-	var theCtrlKey = theEvent.ctrlKey;
-	var theShiftKey= theEvent.shiftKey;
+	const theKey = theEvent.key;
+	const theAltKey = theEvent.altKey;
+	const theCtrlKey = theEvent.ctrlKey;
+	const theShiftKey= theEvent.shiftKey;
   
+  
+	let currentURL = window.location.href;
+	const eChartPage = /casemgmt\/forward\.jsp\?action\=view\&/;
+	const eFormsPage = /eform\/efmformslistadd\.jsp/;
+	const consultationPage = /oscarConsultationRequest\/ConsultationFormRequest\.jsp/;
+	const ticklerPage = /tickler\/ticklerAdd\.jsp/;
+	
+	
+	// console.log(currentURL);
+	// console.log(eChartPage.test(currentURL));
+	switch(true){
+		case eChartPage.test(currentURL):
+			eChartPageHotkeys(theEvent);
+			break;			
+		case eFormsPage.test(currentURL) && theAltKey && theKey == 'q':			// If on eForms page, Alt+Q to close eForms.
+			window.close();
+			break;
+		case consultationPage.test(currentURL) && theAltKey && theKey == 'w':	// If on Consultation page, Alt+W to close Consultation.
+			window.close();
+			break;
+		case ticklerPage.test(currentURL) && theAltKey && theKey == 'a':		// If on Ticklers page, Alt+A to close Ticklers.
+			window.close();
+			break;		
+	}
+}, true);
+})();
+
+
+function eChartPageHotkeys(theEvent){
+	const theKey = theEvent.key;
+	const theAltKey = theEvent.altKey;
+	const theCtrlKey = theEvent.ctrlKey;
+	const theShiftKey= theEvent.shiftKey;
 	switch(true){
 		case theAltKey && theKey == 1:  // Sign, Save, and Bill
 			var theTarget = document.evaluate("id('save')/span/input[contains(@src,'dollar-sign-icon.png')]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
@@ -48,14 +84,5 @@ document.addEventListener('keydown', function(theEvent) {
 			var theTarget = document.evaluate("id('save')/span/input[contains(@src,'system-log-out.png')]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
 			theTarget.click();
 			break;
-
-
-		/*
-		//*[@id="saveImg"]
-		case theAltKey && theCtrlKey && theShiftKey && theKey=='':
-			//TO DO: The action to be performed for the above keyboard shortcut
-			break;
-		*/
 	}
-}, true);
-})();
+}
