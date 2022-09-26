@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name           LabLabler1
+// @name           LabLabler2
 // @namespace      oscar
 // @include        */lab/CA/ALL/labDisplay*
 // @include        */dms/inboxManage*
@@ -20,32 +20,34 @@ document.addEventListener('keydown', function(theEvent) {
 	switch(true){	
 		case (theAltKey && theKey == 'z'):  // for testing
 // 			console.log('hi');
-			testFunction();	
+			labelLabs();	
 			break;      
 	}
 }, true);
 })();
 
-function testFunction(){
+
+function labelLabs(){
 
 	// Gets all lab results from the XML, which are either in table/tbody/tr/td[1]/a[1] or table/tbody/tr/td[1]/span
 	const allLabResults = document.querySelectorAll('table[name="tblDiscs"]>tbody>tr>td:first-child>:is(a:first-child, span)');
-	
-
-	extractKeyLabResults(allLabResults);
+	let keyLabResults = extractKeyLabResults(allLabResults);
+	$("input[id*=acklabel]").val(keyLabResults);
+	$("button[id*=createLabel]").click()
+	console.log(keyLabResults);
 }
 
 function extractKeyLabResults(allLabResults){
 	// console.log(allLabResults);
-	let keyLabResultList = "";
+	let keyLabResultList = "";	
 	let index = 0;
 	allLabResults.forEach(	
 		function(e){			
 			if (!isSubResult(e)){  // add all non sub-results. i.e. add all key results.
-				if(index>0){
-					keyLabResultList += "/";
-				}
-				let labTitle = e.textContent;
+				let labTitle = renameLabResult(e.textContent);  // join to convert array to string.
+				if(index>0 && labTitle != ""){
+					labTitle = "/" + labTitle;
+				}				
 				keyLabResultList += labTitle;
 				// console.log(e);
 // 				console.log(e.parentNode.childNodes);
@@ -54,7 +56,8 @@ function extractKeyLabResults(allLabResults){
 			index++
 		}
 	)
-	console.log(keyLabResultList);
+	
+	return keyLabResultList;
 }
 
 // Purpose: checks if the Lab result is a sub-result. e.g. WBC, RBC are sub results to Hematology Panel (CBC).
@@ -66,6 +69,194 @@ function isSubResult(e){
 }
 
 
+function renameLabResult(strOldName){
+	let strNewName = strOldName;
+	// console.log(strOldName);
+	switch(strOldName)
+	{
+		case 'Hematology Panel':
+			strNewName='CBC';
+			break;
+		case 'Vitamin B12':
+			strNewName='B12';
+			break;
+		case 'Ferritin':
+			strNewName='Fe';
+			break;			
+		case 'Hemoglobin A1c':
+			strNewName='A1c';
+			break;	
+		case 'Creatinine/eGFR':
+			strNewName='Cr';
+			break;	
+		case 'Alanine Aminotransferase':
+			strNewName='ALT';
+			break;	
+		case 'Lipids':
+			strNewName='Lipids';
+			break;	
+		case 'Urine Creatinine Random':
+			strNewName='';
+			break;	
+		case 'Urine Albumin Random':
+			strNewName='ACR';
+			break;	
+		case 'TSH':
+			strNewName='TSH';
+			break;	
+		case 'Iron / TIBC':
+			strNewName='Iron';
+			break;	
+		case 'Total Protein':
+			strNewName='Protein';
+			break;	
+		case 'Total Bilirubin':
+			strNewName='Bili';
+			break;	
+		case 'Alkaline Phosphatase':
+			strNewName='ALP';
+			break;
+		case 'Gamma GT':
+			strNewName='GGT';
+			break;
+		case 'Estradiol':
+			strNewName='Estr';
+			break;
+		case 'C Reactive Protein':
+			strNewName='CRP';
+			break;
+		case '25-Hydroxyvitamin D':
+			strNewName='VitD';
+			break;
+		case 'Electrolytes':
+			strNewName='lytes';
+			break;
+		case 'Albumin':
+			strNewName='Alb';
+			break;
+		case 'T4 Free':
+			strNewName='fT4';
+			break;
+		case 'T3 Free':
+			strNewName='fT3';
+			break;
+		case 'Urine Culture':
+			strNewName='UrCultr';
+			break;
+		case 'Genital Culture':
+			strNewName='GenitCultr';
+			break;
+		case 'Throat Culture':
+			strNewName='ThroatCultr';
+			break;
+		case 'Stool Culture':
+			strNewName='StoolCultr';
+			break;	
+		case 'Hepatitis A':
+			strNewName='HepA';
+			break;			
+		case 'Hepatitis B':
+			strNewName='HepB';
+			break;
+		case 'Hepatitis C':
+			strNewName='HepC';
+			break;
+		case 'Urine Chemistry/Micro':
+			strNewName='UA';
+			break;
+		case 'Calcium':
+			strNewName='Ca';
+			break;		
+		case 'Magnesium':
+			strNewName='Mg';
+			break;
+		case 'Nuclear Ab Titre':
+			strNewName='ANA';
+			break;	
+		case 'Rheumatoid Factor':
+			strNewName='RF';
+			break;
+		case 'HCG Serum':
+			strNewName='bHCG';
+			break;	
+		case 'Interpretation Hematology':
+			strNewName='HemePath Comment';
+			break;
+		case 'Occult Blood Fecal':
+			strNewName='FIT';
+			break;	
+		case 'B Natriuretic Peptide':
+			strNewName='BNP';
+			break;
+		case 'Troponin':
+			strNewName='Trop';
+			break;	
+		case '':
+			strNewName='';
+			break;
+		case '':
+			strNewName='';
+			break;				
+		default:
+			return renameLabResultInexactMatch(strOldName);
+			break;
+	}
+	return strNewName;
+}
+
+function renameLabResultInexactMatch(strOldName){
+	let strNewName = strOldName;
+	// let strOldName = strOldName.toLowerCase();
+	// console.log(strOldName);
+	switch(true)
+	{
+		case strOldName.includes('Helicobacter'):
+			strNewName='H.Pylori';
+			break;
+		case strOldName.includes('Follicle Stimulating Hormone'):
+			strNewName='FSH';
+			break;
+		case strOldName.includes('Luteinizing Hormone'):
+			strNewName='LH';
+			break;
+		case strOldName.includes('Vagina'):
+			strNewName='VagSwab';
+			break;
+		case strOldName.includes('difficile'):
+			strNewName='C.Diff';
+			break;		
+		case strOldName.includes('Ova and Parasite'):
+			strNewName='O&P';
+			break;	
+		case strOldName.includes('Chlamydia'):
+			strNewName='CT&GC';
+			break;				
+		case strOldName.includes('HIV'):
+			strNewName='HIV';
+			break;					
+		case strOldName.includes('Syphilis'):
+			strNewName='Syphilis';
+			break;	
+		case strOldName.includes('Hepatitis C'):
+			strNewName='HepC';
+			break;		
+		case strOldName.includes('Rubella'):
+			strNewName='Rubella';
+			break;	
+		case strOldName.includes('Glucose'):
+			strNewName='Gluc';
+			break;		
+		case strOldName.includes('Trichomonas'):
+			strNewName='Trich';
+			break;	
+		case strOldName.includes('asdf'):
+			strNewName='asdf';
+			break;	
+		default:
+			break;
+	}
+	return strNewName;
+}
 
 /*
 CBC 			/html/body/div/form[3]/table/tbody/tr/td/table[6]/tbody/tr[2]/td[1]/span
