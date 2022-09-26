@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name        EChartButtons6
+// @name        EChartButtons7
 // @namespace   Stanscripts
 // @description Various navigation buttons for echart screen.  Set your own specific fid (form number) or Measurement groupName
 // @include     */casemgmt/forward.jsp?action=view&demographic*
@@ -9,38 +9,50 @@
 
 
 window.addEventListener("load", function(e) {
-  addButton('buttonOpenXray', 'X-ray', 290);
+	addBlock('buttonBlock1');
+	addButtonEForm('buttonOpenXray', 'X-ray', 359, 'buttonBlock1');
+	addButtonEForm('buttonOpenLabReq', 'Lab Req', 275, 'buttonBlock1');
+	addButtonEForm('buttonOpenUS', 'U/S', 293, 'buttonBlock1');
 }, false);
  
-function addButton(id, value, fid){
+function addBlock(id){
 	var targetDiv = document.getElementById('leftNavBar');
+	var theBlock = document.createElement('div');
+	theBlock.id = id;
+	theBlock.class = 'leftBox';
+	theBlock.style = 'display: block;';
+	targetDiv.appendChild(theBlock);
+}
+ 
+ // wrap in block level element so button is next line.
+function addButtonEForm(id, value, fid, divBlock){
+	let targetDiv = document.getElementById(divBlock);
+	if (targetDiv == null){
+		targetDiv = document.getElementById('leftNavBar');
+	}
 	var inputButton = document.createElement('input');
 	inputButton.id = id;
 	inputButton.type = 'button';
 	inputButton.value = value;
-	targetDiv.appendChild(inputButton);
-	addButtonListener(id, fid);
+	targetDiv.appendChild(inputButton);	
+	addButtonEFormListener(id, fid);
 }
  
-function addButtonListener(id, fid){
-  var button = document.getElementById(id);
-  button.addEventListener('click',openLink(fid),true);
-} 
+function addButtonEFormListener(id, fid){
+  var theButton = document.getElementById(id);
+  theButton.addEventListener('click',function () { openLink(fid); },true);
+}
+ 
 
 function openLink(fid){
 	var elements = (window.location.pathname.split('/', 2));
 	firstElement = (elements.slice(1));
 	vPath = ("https://" + location.host + "/"  + firstElement + "/");
-  
-	console.log('test');
-	console.log(elements);
-	console.log(firstElement);
-		
-	 // INSERT YOU OWN form ID (fid=??) here
+  	
 	var formPath = vPath + "eform/efmformadd_data.jsp?fid=" + fid + "&demographic_no=" + findDemogNum();
-	//alert(formPath)
 	window.open(formPath)
 }
+
 function findDemogNum(){
 	var myParam = location.search.split('demographicNo=')[1];
 	//alert(myParam)
