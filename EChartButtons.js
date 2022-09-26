@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name        EChartButtons7
+// @name        EChartButtons8
 // @namespace   Stanscripts
 // @description Various navigation buttons for echart screen.  Set your own specific fid (form number) or Measurement groupName
 // @include     */casemgmt/forward.jsp?action=view&demographic*
@@ -9,10 +9,17 @@
 
 
 window.addEventListener("load", function(e) {
-	addBlock('buttonBlock1');
-	addButtonEForm('buttonOpenXray', 'X-ray', 359, 'buttonBlock1');
-	addButtonEForm('buttonOpenLabReq', 'Lab Req', 275, 'buttonBlock1');
-	addButtonEForm('buttonOpenUS', 'U/S', 293, 'buttonBlock1');
+	let buttonBlock = 'buttonBlock1';
+	addBlock(buttonBlock);
+	addButtonEForm('buttonOpenXray', 'X-ray', 359, buttonBlock);
+	addButtonEForm('buttonOpenLabReq', 'Lab Req', 275, buttonBlock);
+	addButtonEForm('buttonOpenUS', 'U/S', 293, buttonBlock);
+	
+	buttonBlock = 'buttonBlock2';
+	addBlock(buttonBlock);
+	addButtonEForm('buttonOpenXray2', 'X-ray2', 71, buttonBlock);
+	addButtonEForm('buttonOpenLabReq2', 'Lab Req2', 191, buttonBlock);
+	addButtonEForm('buttonOpenUS2', 'U/S2', 211, buttonBlock);
 }, false);
  
 function addBlock(id){
@@ -61,6 +68,8 @@ function findDemogNum(){
 	return demo_no;
 }
 
+
+// below function doesn't work.
 window.addEventListener("load", function() {
 	var theTarget = document.getElementById("leftNavBar");
 	var theLink = document.createElement("a");
