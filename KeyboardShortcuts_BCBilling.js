@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name           KeyboardShortcuts_BCBilling9
+// @name           KeyboardShortcuts_BCBilling10
 // @namespace      oscar
 // @include        	*billing.do?bill*
 // @include        	*oscar/CaseManagementEntry*
@@ -7,7 +7,7 @@
 // @include			*SaveBilling.do*
 // @include        	*billing/CA/BC/billingDigNewSearch.jsp?*
 // @include        	*billing/CA/BC/CreateBilling*
-// @description		In the BC Billing page: Alt+1 to Continue, Alt+Q to input in person visit billing code, Alt+W to input telehealth visit billing code, Alt+A to set focus to Dx code. The above keyboard shortcuts will also scroll to the bottom of the page. In Diagnostic Code search: Alt+1 to Confirm, Escape to Cancel. In Billing confirmation page: Alt+1 to Save Bill.
+// @description		In the BC Billing page: Alt+1 to Continue, Alt+Q to input in person visit billing code, Alt+W to input telehealth visit billing code, Alt+A to set focus to Dx code. The above keyboard shortcuts will also scroll to the bottom of the page. In Diagnostic Code search: Alt+1 to Confirm, Escape to Cancel. In Billing confirmation page: Alt+1 to Save Bill. Alt+A to scroll to bottom of page.
 // @grant	   none
 // ==/UserScript==
 
@@ -35,7 +35,17 @@ document.addEventListener('keydown', function(theEvent) {
 			switch(true){
 				case  (theAltKey && theKey == 1):				// Alt+1 to Continue.
 					var theTarget = document.evaluate("id('buttonRow')/td/input[@value='Continue']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+				
+					// theTarget.click(function(event) {
+					// 		  	console.log($(event.target));
+					// 		  	alert(window.location.href);
+							  	
+					// 		  	// console.log($('div').html(event.target.href));
+	    // 					// 	console.log($(this).attr('href'));
+					// });
+
 					theTarget.click();
+					
 					break;
 				case  (theAltKey && theKey == 'q'):				// Alt+Q to input Office visit code.
 					inPersonVisit();
@@ -66,13 +76,20 @@ document.addEventListener('keydown', function(theEvent) {
 					break;	
 			}
 			break;
-		case (document.getElementsByName("BillingSaveBillingForm").length > 0	//  Check if in in Billing confirmation page. 
-																				// XML contains name = "BillingSaveBillingForm"
-				&& theAltKey && theKey == 1):									// Alt+1 to Save Bill. 
-			// alert("billingConf");
-			var theTarget = document.evaluate("//input[@value='Save Bill']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
-			theTarget.click();
+		case (document.getElementsByName("BillingSaveBillingForm").length > 0):	//  Check if in in Billing confirmation page. 
+																																						// XML contains name = "BillingSaveBillingForm"
+			switch(true){
+				case(theAltKey && theKey == 1):																	// Alt+1 to Save Bill. 
+					var theTarget = document.evaluate("//input[@value='Save Bill']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+					theTarget.click();
+					break;
+				case theAltKey && theKey == 'a':
+					window.scrollTo(0, document.body.scrollHeight);
+					break;	
+				}
 			break;
+				
+
 			
 		// case  theAltKey && theKey == 'z':  // Alt Z for testing.
 			// alert(!!document.getElementById("billingFormTable"));
