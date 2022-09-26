@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name           KeyboardShortcuts_BCBilling8
+// @name           KeyboardShortcuts_BCBilling9
 // @namespace      oscar
 // @include        	*billing.do?bill*
 // @include        	*oscar/CaseManagementEntry*
@@ -7,7 +7,7 @@
 // @include			*SaveBilling.do*
 // @include        	*billing/CA/BC/billingDigNewSearch.jsp?*
 // @include        	*billing/CA/BC/CreateBilling*
-// @description		In the BC Billing page: Alt+1 to Continue, Alt+Q to input in person visit billing code, Alt+W to input telehealth visit billing code, Alt+A to set focus to Dx code. In Diagnostic Code search: Alt+1 to Confirm, Escape to Cancel. In Billing confirmation page: Alt+1 to Save Bill.
+// @description		In the BC Billing page: Alt+1 to Continue, Alt+Q to input in person visit billing code, Alt+W to input telehealth visit billing code, Alt+A to set focus to Dx code. The above keyboard shortcuts will also scroll to the bottom of the page. In Diagnostic Code search: Alt+1 to Confirm, Escape to Cancel. In Billing confirmation page: Alt+1 to Save Bill.
 // @grant	   none
 // ==/UserScript==
 
@@ -39,12 +39,17 @@ document.addEventListener('keydown', function(theEvent) {
 					break;
 				case  (theAltKey && theKey == 'q'):				// Alt+Q to input Office visit code.
 					inPersonVisit();
+					$("input[name=billing_1_fee_dx1]").focus();
+					window.scrollTo(0, document.body.scrollHeight);
 					break;
 				case  (theAltKey && theKey == 'w'):				// Alt+W to input Telehealth visit code.
 					virtualVisit();
+					$("input[name=billing_1_fee_dx1]").focus();
+					window.scrollTo(0, document.body.scrollHeight);
 					break;
 				case  (theAltKey && theKey == 'a'):				// Alt+A to set focus to Diagnostic code (row 1).
 					$("input[name=billing_1_fee_dx1]").focus();
+					window.scrollTo(0, document.body.scrollHeight);
 					break;
 			}
 			break;
