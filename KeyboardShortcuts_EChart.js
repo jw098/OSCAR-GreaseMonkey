@@ -1,12 +1,12 @@
 // ==UserScript==
-// @name           KeyboardShortcuts_EChart8
+// @name           KeyboardShortcuts_EChart9
 // @namespace      oscar
 // @include        */casemgmt/forward.jsp?action=view&*
 // @include        */oscarRx/choosePatient.do*
 // @include        */eform/efmformslistadd.jsp*
 // @include        */oscarConsultationRequest/ConsultationFormRequest.jsp*
 // @include        */tickler/ticklerAdd.jsp*
-// @description		Within the E-chart: Alt+1 to Sign/Save/Bill. Alt+2 to Save. Alt+3 to Sign/Save. Alt+4 to Exit. Alt+W, Alt+Q, Alt+A to open/close Consultation, eForms, Ticklers respectively.
+// @description		Within the E-chart: Alt+1 to Sign/Save/Bill. Alt+2 to Save. Alt+3 to Sign/Save. Alt+4 to Exit. Alt+W, Alt+Q, Alt+A to open/close Consultation, eForms, Ticklers respectively. Within Ticklers, Alt+1 to 'Submit and EXIT', Alt+2 to 'Submit & Write to Encounter', Alt+A to set focus to text box. Within Consultation: Alt+1 to 'Submit Consultation Request'.
 // @grant	   none
 // ==/UserScript==
 
@@ -49,12 +49,35 @@ document.addEventListener('keydown', function(theEvent) {
 		case eFormsPage.test(currentURL) && theAltKey && theKey == eFormsHotkey:	// If on eForms page, hotkey to close window.
 			window.close();
 			break;
-		case consultationPage.test(currentURL) && theAltKey && theKey == consultationHotkey:	// If on Consultation page, hotkey to close window.
-			window.close();
-			break;
-		case ticklerPage.test(currentURL) && theAltKey && theKey == ticklerHotkey:		// If on Ticklers page, hotkey to close window.
-			window.close();
-			break;		
+		case consultationPage.test(currentURL):
+			switch(true){
+				case theAltKey && theKey == consultationHotkey:	// If on Consultation page, hotkey to close window.
+					window.close();
+					break;
+				case theAltKey && theKey == 1:
+					var theTarget = document.evaluate("//input[@value='Submit Consultation Request']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+					theTarget.click();
+					break;					
+			} 
+		case ticklerPage.test(currentURL):
+			switch(true){
+				case theAltKey && theKey == ticklerHotkey:		// If on Ticklers page, hotkey to close window.
+					window.close();
+					break;
+				case theAltKey && theKey == 1:
+					var theTarget = document.evaluate("//input[@value='Submit and EXIT']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+					theTarget.click();
+					break;
+				case theAltKey && theKey == 2:
+					var theTarget = document.evaluate("//input[@value='Submit & Write to Encounter']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+					theTarget.click();
+					break;
+				case theAltKey && theKey == 'a':
+					var theTarget = document.evaluate("//textarea",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+					theTarget.focus();
+					break;				
+			}  
+			
 	}
 }, true);
 })();
