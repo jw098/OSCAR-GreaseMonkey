@@ -1,9 +1,13 @@
 // ==UserScript==
-// @name           EChart_KeyboardShortcuts2
+// @name           EChart_KeyboardShortcuts3
 // @namespace      oscar
 // @include        */casemgmt/forward.jsp?action=view&*
+// @description		Within the E-chart, Alt+1 to Save, Alt+2 to Sign/Save, Alt+3 to Sign/Save/Bill, Alt+4 to Exit.
 // @grant	   none
 // ==/UserScript==
+
+// created by Darius Opensource
+
 (function(){
 document.addEventListener('keydown', function(theEvent) {
 	//theEvent.stopPropagation();
@@ -15,31 +19,25 @@ document.addEventListener('keydown', function(theEvent) {
 	var theCtrlKey = theEvent.ctrlKey;
 	var theShiftKey= theEvent.shiftKey;
   
-
-  
 	switch(true){
-
-
-		case theAltKey && theKey== 2:
+		case theAltKey && theKey== 1:  // Save
 			var theTarget = document.evaluate("id('save')/span/input[contains(@src,'media-floppy.png')]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
 			theTarget.click();
 			break;
-		case theAltKey && theKey== 3:
+		case theAltKey && theKey== 2:  // Sign and Save
 			var theTarget = document.evaluate("id('save')/span/input[contains(@src,'note-save.png')]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
 			theTarget.click();
 			break;
-		case theAltKey && theKey== 4:
+		case theAltKey && theKey== 3:  // Sign, Save, and Bill
 			var theTarget = document.evaluate("id('save')/span/input[contains(@src,'dollar-sign-icon.png')]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
 			theTarget.click();
-			break;
-		case theAltKey && theKey== 5:
+			break;z
+		case theAltKey && theKey== 4: // Exit
 			var theTarget = document.evaluate("id('save')/span/input[contains(@src,'system-log-out.png')]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
 			theTarget.click();
 			break;
 
-    case theAltKey && theKey == 6:
-		  window.location = "https://en.wikipedia.org/wiki/Main_Page"; // go to wiki
-			break;
+
 		/*
 		//*[@id="saveImg"]
 		case theAltKey && theCtrlKey && theShiftKey && theKey=='':
