@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name           KeyboardShortcuts_BCBilling5
+// @name           KeyboardShortcuts_BCBilling6
 // @namespace      oscar
 // @include        *billing.do?bill*
 // @include        *oscar/CaseManagementEntry*
@@ -29,43 +29,42 @@ document.addEventListener('keydown', function(theEvent) {
 	const billingConf = /billing\/CA\/BC\/CreateBilling/;
   	
 	switch(true){
-		case  (!!document.getElementById("billingFormTable") &&		// Check if in BC Billing page. XML contains id = "billingFormtable"
+		case  (!!document.getElementById("billingFormTable") &&		// If in BC Billing page, whose XML contains id = "billingFormtable"
 				theAltKey && theKey == 1):  						// Alt+1 to Continue.
-			var theTarget = document.evaluate("id('buttonRow')/td/input[contains(@value,'Continue')]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+			var theTarget = document.evaluate("id('buttonRow')/td/input[@value='Continue']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
 			theTarget.click();
 			break;
-		case  (!!document.getElementById("billingFormTable") &&		// Check if in BC Billing page. XML contains id = "billingFormtable"
+		case  (!!document.getElementById("billingFormTable") &&		// If in BC Billing page, whose XML contains id = "billingFormtable"
 				theAltKey && theKey == 'q'):  						// Alt+Q to input Office visit code.
 			inPersonVisit()
 			break;
-		case  (!!document.getElementById("billingFormTable") &&		// Check if in BC Billing page. XML contains id = "billingFormtable"
+		case  (!!document.getElementById("billingFormTable") &&		// If in BC Billing page, whose XML contains id = "billingFormtable"
 				theAltKey && theKey == 'w'):  						// Alt+W to input Telehealth visit code.
 			virtualVisit()
 			break;
-		case (!!document.getElementById("servicecode") &&	// Check if in Diagnostic Code search. XML contains id = "servicecode"
-				theAltKey && theKey ==  1):				// Alt+1 to Confirm.
-			var theTarget = document.evaluate("id('servicecode')/input[contains(@value,'Confirm')]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+		case (!!document.getElementById("servicecode") &&	// If in Diagnostic Code search, whose XML contains id = "servicecode"
+				theAltKey && theKey ==  1):					// Alt+1 to Confirm.
+			var theTarget = document.evaluate("id('servicecode')/input[@value='Confirm']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
 			theTarget.click();
 			break;	
-		case (!!document.getElementById("servicecode") &&	// Check if in Diagnostic Code search. XML contains id = "servicecode"
+		case (!!document.getElementById("servicecode") &&	// If in Diagnostic Code search, whose XML contains id = "servicecode"
 				theKey == "Escape"):						// Escape to Cancel. 
 			// alert("dxCodeSearch");
-			var theTarget = document.evaluate("id('servicecode')/input[contains(@value,'Cancel')]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+			var theTarget = document.evaluate("id('servicecode')/input[@value='Cancel']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
 			theTarget.click();
 			break;	
 		case (document.getElementsByName("BillingSaveBillingForm").length > 0	//  Check if in in Billing confirmation page. XML contains name = "BillingSaveBillingForm"
 				&& theAltKey && theKey == 1):									// Alt+1 to Save Bill. 
 			// alert("billingConf");
-			var theTarget = document.evaluate(
-			"//input[contains(@value,'Save Bill')]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+			var theTarget = document.evaluate("//input[@value='Save Bill']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
 			theTarget.click();
 			break;
 			
-		case  theAltKey && theKey == 'z':  // Alt Z for testing.
+		// case  theAltKey && theKey == 'z':  // Alt Z for testing.
 			// alert(!!document.getElementById("billingFormTable"));
-			alert(document.getElementsByName("BillingSaveBillingForm").length > 0);
+			// alert(document.getElementsByName("BillingSaveBillingForm").length > 0);
 			// alert(dxCodeSearch.test(currentURL));
-			break;
+			// break;
 
 		/*
 		/html/body/form/table[2]/tbody/tr/td/table[3]/tbody/tr/td/table[3]/tbody/tr[2]/td/input[3]
