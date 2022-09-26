@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name           KeyboardShortcuts_BCBilling3
+// @name           KeyboardShortcuts_BCBilling4
 // @namespace      oscar
 // @include        *billing.do?bill*
 // @include        *oscar/CaseManagementEntry*
@@ -29,30 +29,35 @@ document.addEventListener('keydown', function(theEvent) {
 	const billingConf = /billing\/CA\/BC\/CreateBilling/;
   	
 	switch(true){
-		case  (billingPage.test(currentURL) || billingPage2.test(currentURL)) && theAltKey && theKey == 'a':  // Within the BC Billing page, Alt+A to Continue.
+		case  (!!document.getElementById("billingFormTable") &&		// Check if in BC Billing page. XML contains id = "billingFormtable"
+				theAltKey && theKey == 'a'):  						// Alt+A to Continue.
 			var theTarget = document.evaluate("id('buttonRow')/td/input[contains(@value,'Continue')]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
 			theTarget.click();
 			break;
-		case dxCodeSearch.test(currentURL) && theAltKey && theKey == 'a':  // In Diagnostic Code search: Alt+A to Confirm.
+		case (!!document.getElementById("servicecode") &&	// Check if in Diagnostic Code search. XML contains id = "servicecode"
+				theAltKey && theKey == 'a'):				// Alt+A to Confirm.
 			var theTarget = document.evaluate("id('servicecode')/input[contains(@value,'Confirm')]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
 			theTarget.click();
 			break;	
-		case dxCodeSearch.test(currentURL) && theKey == "Escape":  // In Diagnostic Code search: Escape to Cancel. 
+		case (!!document.getElementById("servicecode") &&	// Check if in Diagnostic Code search. XML contains id = "servicecode"
+				theKey == "Escape"):						// Escape to Cancel. 
 			// alert("dxCodeSearch");
 			var theTarget = document.evaluate("id('servicecode')/input[contains(@value,'Cancel')]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
 			theTarget.click();
 			break;	
-		case billingConf.test(currentURL) && theAltKey && theKey == 'a':  // In Billing confirmation page: Alt+A to Save Bill. 
+		case (document.getElementsByName("BillingSaveBillingForm").length > 0	//  Check if in in Billing confirmation page. XML contains name = "BillingSaveBillingForm"
+				&& theAltKey && theKey == 'a'):									// Alt+A to Save Bill. 
 			// alert("billingConf");
 			var theTarget = document.evaluate(
-			"/html/body/form/table[2]/tbody/tr/td/table[3]/tbody/tr/td/table[3]/tbody/tr[2]/td/input[contains(@value,'Save Bill')]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+			"//input[contains(@value,'Save Bill')]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
 			theTarget.click();
 			break;
 			
-		// case  theAltKey && theKey == 'z':  // Alt Z for testing.
-			// alert(currentURL);
+		case  theAltKey && theKey == 'z':  // Alt Z for testing.
+			// alert(!!document.getElementById("billingFormTable"));
+			alert(document.getElementsByName("BillingSaveBillingForm").length > 0);
 			// alert(dxCodeSearch.test(currentURL));
-			// break;
+			break;
 
 		/*
 		/html/body/form/table[2]/tbody/tr/td/table[3]/tbody/tr/td/table[3]/tbody/tr[2]/td/input[3]
