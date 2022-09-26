@@ -1,10 +1,12 @@
 // ==UserScript==
-// @name           KeyboardShortcuts_Inbox3
+// @name           KeyboardShortcuts_Inbox4
 // @namespace      oscar
 // @include        */lab/CA/ALL/labDisplay*
 // @include        */dms/inboxManage*
 // @include        */dms/showDocument*
-// @description		Within Inbox: Alt+1 to open first item. Within the Lab result: Alt+1 to Acknowledge and label Labs. Alt+Q to open E-chart. Alt+W to open Tickler. Alt+Z to only label Labs.
+// @include        */tickler/ForwardDemographicTickler*
+// @include        */dms/MultiPageDocDisplay.jsp*
+// @description		Within Inbox: Alt+1 to open first item. Within the Lab result: Alt+1 to Acknowledge and label Labs. Alt+Q to open E-chart. Alt+W to open Tickler. Alt+Z to only label Labs. Within the Tickler: Alt+W to close Tickler, Alt+1 to Submit and EXIT, Alt+2 to Submit & Write to Encounter, Alt+A to set focus to text box.
 // @require   https://ajax.googleapis.com/ajax/libs/jquery/1.3.1/jquery.min.js
 // @grant	   none
 // ==/UserScript==
@@ -24,6 +26,8 @@ document.addEventListener('keydown', function(theEvent) {
   
 	let currentURL = window.location.href;
 	const labResultPage = /lab\/CA\/ALL\/labDisplay/
+	const ticklerPage = /tickler\/ForwardDemographicTickler/
+	const documentPage = /dms\/showDocument/
 	
 	switch(true){
 		case (!!document.getElementById("docViews") &&	// If in the inbox, whose XML contains id = "docViews"
@@ -31,7 +35,7 @@ document.addEventListener('keydown', function(theEvent) {
 			getNextTarget().click();
 			console.log("test")
 			break;
-		case (!!document.querySelectorAll('[id^=acknowledgeForm]')): // If in the Lab result, whose XML contains id = "acknowledgeForm"
+		case (labResultPage.test(currentURL) || documentPage.test(currentURL)): // If in the Lab/Document result page
 			switch(true){
 				case (theAltKey && theKey == 1):			// Alt+1: Acknowledge the result.
 					if (labResultPage.test(currentURL)){	// if in lab result page: label lab results.
@@ -47,13 +51,59 @@ document.addEventListener('keydown', function(theEvent) {
 				case (theAltKey && theKey == 'w'):  							// Alt+W: open Tickler
 					var theTarget = document.evaluate("//input[@value='Tickler']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
 					theTarget.click();
+// 					$( document ).ready(function() {
+
+
+// 						// var winOpen = window.open;
+// 						// window.open = function() {
+// 						//     var win = winOpen.apply(this, arguments);
+// 						//     console.log(win);
+// 						//     console.log("hi");
+// 						//     // windows.push(win);
+// 						//     // return win;
+// 						// }
+// ;						
+// 						$('input[value=Tickler]').click(function(event) {
+// 							  	console.log($(event.target));
+// 							  	window.blur;							  	
+// 							  	console.log(window.location.href);
+							  	
+// 							  	// console.log($('div').html(event.target.href));
+// 	    					// 	console.log($(this).attr('href'));
+// 							});
+// 						$('input[value=Tickler]').click();
+						
+					
+// 						// let windowList = windows.getAll();
+// 						// console.log(windowList);
+						
+// 					});
+
 					break;
 				case (labResultPage.test(currentURL) && theAltKey && theKey == 'z'):  // Alt+Z: if in lab result page: label lab results.
 					labelLabs();	
 					break;   					
 			}
 			break;
-		   
+		case (ticklerPage.test(currentURL)):
+			switch (true){
+				case (theAltKey && theKey == 'w'):			// If Tickler page open. Alt+W to close it.
+					window.close();
+					break;
+				case theAltKey && theKey == 1:
+					var theTarget = document.evaluate("//input[@value='Submit and EXIT']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+					theTarget.click();
+					break;
+				case theAltKey && theKey == 2:
+					var theTarget = document.evaluate("//input[@value='Submit & Write to Encounter']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+					theTarget.click();
+					break;
+				case theAltKey && theKey == 'a':
+					var theTarget = document.evaluate("//textarea",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+					theTarget.focus();
+					break;	
+			} 
+
 	}
 }, true);
 })();
@@ -259,8 +309,8 @@ function renameLabResult(strOldName){
 		case 'Troponin':
 			strNewName='Trop';
 			break;	
-		case '':
-			strNewName='';
+		case 'General Information':
+			strNewName='Gen Info';
 			break;
 		case '':
 			strNewName='';
