@@ -3,7 +3,7 @@
 // @namespace      oscar
 // @include        */tickler/ticklerAdd.jsp*
 // @include        */tickler/ForwardDemographicTickler*
-// @description		Within Ticklers, Alt+1 to 'Submit and EXIT', Alt+2 to 'Submit & Write to Encounter', Alt+A to set focus to text box.
+// @description		Within Ticklers, Alt+1 to 'Submit and EXIT', Alt+2 to 'Submit & Write to Encounter', Alt+A to set focus to text box. When the Tickler page loads, it also automatically sets focus to the text box. Note: if not already done, you should consider setting a 'Default Tickler Recipient' under OSCAR Preferences.
 // @grant	   none
 // ==/UserScript==
 
@@ -12,7 +12,9 @@
 const ticklerHotkey1 = 'z';
 const ticklerHotkey2 = 'w';
 
-
+let currentURL = window.location.href;
+const ticklerPage1 = /tickler\/ticklerAdd\.jsp/;
+const ticklerPage2 = /tickler\/ForwardDemographicTickler/
 
 window.addEventListener('keydown', function(theEvent) {
 	//theEvent.stopPropagation();
@@ -24,13 +26,7 @@ window.addEventListener('keydown', function(theEvent) {
 	const theCtrlKey = theEvent.ctrlKey;
 	const theShiftKey= theEvent.shiftKey;
     
-	let currentURL = window.location.href;
-	const medPage = /oscarRx\/choosePatient\.do/
-	const eChartPage = /casemgmt\/forward\.jsp\?action\=view\&/;
-	const eFormsPage = /eform\/efmformslistadd\.jsp/;
-	const consultationPage = /oscarConsultationRequest\/ConsultationFormRequest\.jsp/;
-	const ticklerPage = /tickler\/ticklerAdd\.jsp/;
-	
+
 
 	switch(true){
 		case theAltKey && (theKey == ticklerHotkey1 || theKey == ticklerHotkey2):	// hotkeys to close window.
@@ -52,3 +48,12 @@ window.addEventListener('keydown', function(theEvent) {
 			
 }, true);
 
+window.addEventListener('load', function(theEvent) {
+	switch (true){
+		case (ticklerPage1.test(currentURL) || ticklerPage2.test(currentURL)): //  Check if in in Billing confirmation page. 
+			var theTarget = document.evaluate("//textarea",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+			theTarget.focus();
+			break;
+	}
+
+}, true);
