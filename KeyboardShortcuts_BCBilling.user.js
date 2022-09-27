@@ -13,8 +13,15 @@
 
 // forked from original KeyboardShortcuts script created by Darius Opensource
 
-(function(){
-document.addEventListener('keydown', function(theEvent) {
+
+let currentURL = window.location.href;
+const billingPage = /billing.do\?bill/;
+const billingPage2 = /oscar\/CaseManagementEntry/;
+const dxCodeSearch = /billing\/CA\/BC\/billingDigNewSearch.jsp/;
+const billingConf = /billing\/CA\/BC\/CreateBilling/;
+
+
+window.addEventListener('keydown', function(theEvent) {
 	//theEvent.stopPropagation();
 	//theEvent.preventDefault();
 	// var theKeyCode = theEvent.charCode;// || event.which;
@@ -24,28 +31,12 @@ document.addEventListener('keydown', function(theEvent) {
 	var theCtrlKey = theEvent.ctrlKey;
 	var theShiftKey= theEvent.shiftKey;
 	
-	let currentURL = window.location.href;
-	const billingPage = /billing.do\?bill/;
-	const billingPage2 = /oscar\/CaseManagementEntry/;
-	const dxCodeSearch = /billing\/CA\/BC\/billingDigNewSearch.jsp/;
-	const billingConf = /billing\/CA\/BC\/CreateBilling/;
-  	
 	switch(true){		
 		case  (!!document.getElementById("billingFormTable")):  // If in BC Billing page, whose XML contains id = "billingFormtable"
 			switch(true){
 				case  (theAltKey && theKey == 1):				// Alt+1 to Continue.
 					var theTarget = document.evaluate("id('buttonRow')/td/input[@value='Continue']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
-				
-					// theTarget.click(function(event) {
-					// 		  	console.log($(event.target));
-					// 		  	alert(window.location.href);
-							  	
-					// 		  	// console.log($('div').html(event.target.href));
-	    // 					// 	console.log($(this).attr('href'));
-					// });
-
 					theTarget.click();
-					
 					break;
 				case  (theAltKey && theKey == 'q'):				// Alt+Q to input Office visit code.
 					inPersonVisit();
@@ -104,8 +95,16 @@ document.addEventListener('keydown', function(theEvent) {
 		*/
 	}
 }, true);
-})();
 
+
+window.addEventListener('load', function(theEvent) {
+	switch (true){
+		case (document.getElementsByName("BillingSaveBillingForm").length > 0): //  Check if in in Billing confirmation page. 
+			window.scrollTo(0, document.body.scrollHeight);
+			break;
+	}
+
+}, true);
 
 function inPersonVisit(){
   age = $("#patientIdRow").children().children().next().next().next().html();
