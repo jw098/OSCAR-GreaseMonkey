@@ -1,10 +1,9 @@
 // ==UserScript==
-// @name           KeyboardShortcuts_Inbox
+// @name           Inbox_KeyboardShortcuts
 // @namespace      oscar
 // @include        */lab/CA/ALL/labDisplay*
 // @include        */dms/inboxManage*
 // @include        */dms/showDocument*
-// @include        */tickler/ForwardDemographicTickler*
 // @include        */dms/MultiPageDocDisplay.jsp*
 // @description		Within Inbox: Alt+1 to open first item. Within the Lab result: Alt+1 to Acknowledge and label Labs. Alt+Q to open E-chart. Alt+W to open Tickler. Alt+Z to only label Labs. Within the Tickler: Alt+W to close Tickler, Alt+1 to Submit and EXIT, Alt+2 to Submit & Write to Encounter, Alt+A to set focus to text box.
 // @require   https://ajax.googleapis.com/ajax/libs/jquery/1.3.1/jquery.min.js
@@ -13,8 +12,8 @@
 
 // created by Darius Opensource
 
-(function(){
-document.addEventListener('keydown', function(theEvent) {
+
+window.addEventListener('keydown', function(theEvent) {
 	//theEvent.stopPropagation();
 	//theEvent.preventDefault();
 	// var theKeyCode = theEvent.charCode;// || event.which;
@@ -85,28 +84,9 @@ document.addEventListener('keydown', function(theEvent) {
 					break;   					
 			}
 			break;
-		case (ticklerPage.test(currentURL)):
-			switch (true){
-				case (theAltKey && theKey == 'w'):			// If Tickler page open. Alt+W to close it.
-					window.close();
-					break;
-				case theAltKey && theKey == 1:
-					var theTarget = document.evaluate("//input[@value='Submit and EXIT']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
-					theTarget.click();
-					break;
-				case theAltKey && theKey == 2:
-					var theTarget = document.evaluate("//input[@value='Submit & Write to Encounter']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
-					theTarget.click();
-					break;
-				case theAltKey && theKey == 'a':
-					var theTarget = document.evaluate("//textarea",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
-					theTarget.focus();
-					break;	
-			} 
-
 	}
 }, true);
-})();
+
 
 function getNextTarget() {
 	
