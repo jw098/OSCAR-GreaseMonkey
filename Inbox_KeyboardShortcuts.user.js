@@ -5,7 +5,7 @@
 // @include        */dms/inboxManage*
 // @include        */dms/showDocument*
 // @include        */dms/MultiPageDocDisplay.jsp*
-// @description		Within Inbox: Alt+1 to open first item. Within the Lab result: Alt+1 to Acknowledge and label Labs. Alt+Q to open E-chart. Alt+W to open Tickler. Alt+Z to only label Labs. Within the Tickler: Alt+W to close Tickler, Alt+1 to Submit and EXIT, Alt+2 to Submit & Write to Encounter, Alt+A to set focus to text box.
+// @description		Within Inbox: Alt+1 to open first item. Within the Lab result: Alt+1 to Acknowledge and label labs with the actual names of each test (as opposed to cryptic labels like HAEM1, CHEM4, etc.). Alt+Q to open E-chart. Alt+W to open Tickler. Alt+Z to only label Labs without acknowleding.
 // @require   https://ajax.googleapis.com/ajax/libs/jquery/1.3.1/jquery.min.js
 // @grant	   none
 // ==/UserScript==

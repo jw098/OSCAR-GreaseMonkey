@@ -4,7 +4,7 @@
 // @include        */lab/CA/ALL/labDisplay*
 // @include        */dms/inboxManage*
 // @include        */dms/showDocument*
-// @description		Labels lab results.
+// @description		In the Lab result, Alt+Z to automatically label the lab result without acknowledging the result. It is labeled with the actual names of each test (as opposed to cryptic labels like HAEM1, CHEM4, etc.)
 // @grant	   none
 // ==/UserScript==
 

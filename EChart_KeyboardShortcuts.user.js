@@ -5,7 +5,7 @@
 // @include        */oscarRx/choosePatient.do*
 // @include        */eform/efmformslistadd.jsp*
 // @include        */oscarConsultationRequest/ConsultationFormRequest.jsp*
-// @description		Within the E-chart: Alt+1 to Sign/Save/Bill. Alt+2 to Save. Alt+3 to Sign/Save. Alt+4 to Exit. Alt+W, Alt+Q, Alt+A to open/close Consultation, eForms, Ticklers respectively. Within Ticklers, Alt+1 to 'Submit and EXIT', Alt+2 to 'Submit & Write to Encounter', Alt+A to set focus to text box. Within Consultation: Alt+1 to 'Submit Consultation Request'.
+// @description		Within the E-chart: Alt+1 to Sign/Save/Bill. Alt+2 to Save. Alt+3 to Sign/Save. Alt+4 to Exit. Alt+W, Alt+Q, Alt+A to open Consultation, eForms, Ticklers respectively. Within Consultation: Alt+1 to 'Submit Consultation Request'.
 // @grant	   none
 // ==/UserScript==
 
