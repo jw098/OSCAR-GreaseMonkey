@@ -1,6 +1,6 @@
 # OSCAR-GreaseMonkey
 
-GreaseMonkey scripts for OSCAR EMR
+A collection of my GreaseMonkey scripts for OSCAR EMR.
 
 # How to install the GreaseMonkey scripts
 
@@ -20,7 +20,7 @@ Before installation, ensure the GreaseMonkey/Tampermonkey extension has been ins
 
 - Manually highlight and copy the script's code.
 
-- Click the GreaseMonkey icon in the Firefox toolbar
+- Click the GreaseMonkey icon in the Firefox toolbar (or Tampermonkey in Chrome)
 
 - Click 'New user script'
 
@@ -28,13 +28,13 @@ Before installation, ensure the GreaseMonkey/Tampermonkey extension has been ins
 
 # What the scripts do
 
-## Billing Screen Buttons
+## BCBillingScreenButtons
 
 On the BC Billing page, buttons to automatically bill age-related codes and other common codes. 
 
 ## EChartButtons
 
-Various navigation buttons for echart screen.  Set your own specific fid (form number) or Measurement groupName
+Various navigation buttons for e-chart screen (e.g. Lab req, Ultrasound req, X-ray req).  Set your own specific fid (form number ID) or Measurement groupName.
 
 ## KeyboardShortcuts_BCBilling
 
@@ -62,4 +62,4 @@ Within the Tickler: Alt+W to close Tickler, Alt+1 to Submit and EXIT, Alt+2 to S
 
 ## KeyboardShortcuts_Schedule
 
-Within the Schedule page: Alt+1 gets the next patient. i.e. the first patient that is not Billed, not Signed, not No show, and not Cancelled.
+Within the Schedule page: Alt+1 opens the e-chart for the next patient. i.e. the first patient that is not Billed, not Signed, not No show, and not Cancelled.

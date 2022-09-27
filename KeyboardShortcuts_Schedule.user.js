@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name           Schedule_KeyboardShortcuts
+// @name           KeyboardShortcuts_Schedule
 // @namespace      oscar
 // @include        */provider/providercontrol.jsp?* 
 // @include        *provider/appointmentprovideradminday.jsp* 
-// @description		Within the Schedule page: Alt+1 gets the next patient. i.e. the first patient that is not Billed, not Signed, not No show, and not Cancelled.
+// @description		Within the Schedule page: Alt+1 opens the e-chart for the next patient. i.e. the first patient that is not Billed, not Signed, not No show, and not Cancelled.
 // @require   https://ajax.googleapis.com/ajax/libs/jquery/1.3.1/jquery.min.js
 // @grant       none
 // ==/UserScript==
