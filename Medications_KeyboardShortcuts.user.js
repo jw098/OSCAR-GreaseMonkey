@@ -2,7 +2,7 @@
 // @name           Medications_KeyboardShortcuts
 // @namespace      oscar
 // @include        */oscarRx/choosePatient.do*
-// @description		Within Medications, Alt+1 to 'Save And Print'. When the prescripton pops up, Alt+1 'Print & Paste into EMR'. Alt+2 to 'Fax & Paste into EMR'. 
+// @description		Within Medications, Alt+1 to 'Save And Print', Alt+A to set focus to 'Drug Name' text area (to enter a new medication). When the prescripton pops up, Alt+1 'Print & Paste into EMR'. Alt+2 to 'Fax & Paste into EMR'. 
 // @require http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js
 // @grant	   none
 // ==/UserScript==
@@ -27,17 +27,22 @@ window.addEventListener('keydown', function(theEvent) {
 
 
 	if(!document.getElementById("lightwindow_iframe")){  // check if lightwindow not loaded
+		let theTarget;
 		switch(true){
 			case theAltKey && theKey == 1:
-				var theTarget = document.evaluate("//*[@id='saveButton']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+				theTarget = document.evaluate("//*[@id='saveButton']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
 				theTarget.click();
-				window.scrollTo(0, 30);
+				
 				// window.addEventListener('load', function(theEvent) {
 				// 	console.log("window done loading");
 				// });
 
 				// setTimeout(iFrameListener, 3000);  // wait for the lightwindow to load, before attaching listeners
 
+				break;
+			case theAltKey && theKey == 'a':
+				theTarget = document.getElementById("searchString");
+				theTarget.focus();
 				break;
 		}
 	}
@@ -99,20 +104,20 @@ function iFrameKeyDownAction(theEvent){
 	let iframe = document.getElementById("lightwindow_iframe");
 	let iframeDoc = iframe.contentWindow.document || iframe.contentWindow;
 
+	let theTarget;
 	switch(true){
 		case theAltKey && theKey == 1:
-			var theTarget = iframeDoc.evaluate("//input[@value='Print & Paste into EMR']",iframeDoc,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+			theTarget = iframeDoc.evaluate("//input[@value='Print & Paste into EMR']",iframeDoc,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
 			theTarget.click();
 			rxPageLoaded = false;
 			break;
 		case theAltKey && theKey == 2:
-			var theTarget = iframeDoc.evaluate("//input[@value='Fax & Paste into EMR']",iframeDoc,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+			theTarget = iframeDoc.evaluate("//input[@value='Fax & Paste into EMR']",iframeDoc,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
 			theTarget.click();
 			rxPageLoaded = false;
 			break;	
 		case theKey == 'Escape':
-			var theTarget = document.getElementById("lightwindow_title_bar_close_link");
-			console.log(theTarget);
+			theTarget = document.getElementById("lightwindow_title_bar_close_link");
 			theTarget.click();
 			break;
 	}
@@ -122,11 +127,12 @@ function iFrameKeyDownAction(theEvent){
 
 /*
 PURPOSE:
-- add click event listener to the Save and Print button. Activates the lightwindow mutationObserver.
+- add click event listener to the Save and Print button. Sets vertical scroll height and activates the lightwindow mutationObserver.
 */
 const inputButton = document.getElementById("saveButton");
 inputButton.addEventListener('click', function(theEvent){
 	console.log('clicked Save and Print button');
+	window.scrollTo(0, 10);
 	lightwindowIFrameMutationObserver();
 });
 
@@ -139,7 +145,7 @@ NOTES:
 
 */
 function lightwindowIFrameMutationObserver(){
-	var mutationObserver = new MutationObserver(function(mutations) {
+	let mutationObserver = new MutationObserver(function(mutations) {
 
 		// mutations.forEach(function(mutation) {
 		// 	console.log(mutation);
