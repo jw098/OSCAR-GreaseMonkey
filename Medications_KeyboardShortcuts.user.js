@@ -10,7 +10,6 @@
 
 const medPage = /oscarRx\/choosePatient\.do/
 let currentURL = window.location.href;
-// let rxPageLoaded = false;
 
 /*
 PURPOSE: keydown event listener. Alt+1 clicks the 'Save and Print' button, as long as the lightwindow isn't currently loaded.
@@ -51,7 +50,6 @@ window.addEventListener('keydown', function(theEvent) {
 
 /*
 PURPOSE: adds keydown event listeners when lightwindow is loaded.
-
 NOTE: Need separate listeners for the iFrame and the top-level window.
 */
 window.addEventListener('keydown', function(theEvent) {

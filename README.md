@@ -26,6 +26,10 @@ Before installation, ensure the GreaseMonkey/Tampermonkey extension has been ins
 
 - Paste the desired script's code and overwrite the pre-written code in the new script.
 
+# Disclaimer
+
+This collection of scripts has only been tested on one implementation of OSCAR EMR. Feel free to contact me here if you notice any bugs.
+
 # What the scripts do
 
 ## BCBilling_KeyboardShortcuts
