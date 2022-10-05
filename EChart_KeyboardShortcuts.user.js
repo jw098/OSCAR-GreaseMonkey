@@ -2,7 +2,6 @@
 // @name           EChart_KeyboardShortcuts
 // @namespace      oscar
 // @include        */casemgmt/forward.jsp?action=view&*
-// @include        */oscarRx/choosePatient.do*
 // @include        */eform/efmformslistadd.jsp*
 // @include        */oscarConsultationRequest/ConsultationFormRequest.jsp*
 // @description		Within the E-chart: Alt+1 to Sign/Save/Bill. Alt+2 to Save. Alt+3 to Sign/Save. Alt+4 to Exit. Alt+W, Alt+Q, Alt+A to open Consultation, eForms, Ticklers respectively. Within Consultation: Alt+1 to 'Submit Consultation Request'.
@@ -41,9 +40,6 @@ document.addEventListener('keydown', function(theEvent) {
 	switch(true){
 		case eChartPage.test(currentURL):
 			eChartPageHotkeys(theEvent);
-			break;
-		case medPage.test(currentURL) && theAltKey && theKey == medicationHotkey:	// If on Medications page, hotkey to close window.
-			window.close();
 			break;			
 		case eFormsPage.test(currentURL) && theAltKey && theKey == eFormsHotkey:	// If on eForms page, hotkey to close window.
 			window.close();

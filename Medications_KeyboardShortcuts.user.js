@@ -2,7 +2,7 @@
 // @name           Medications_KeyboardShortcuts
 // @namespace      oscar
 // @include        */oscarRx/choosePatient.do*
-// @description		Within Medications, Alt+1 to 'Save And Print', Alt+A to set focus to 'Drug Name' text area (to enter a new medication). When the prescripton pops up, Alt+1 'Print & Paste into EMR'. Alt+2 to 'Fax & Paste into EMR'. 
+// @description		Within Medications, Alt+1 to 'Save And Print', Alt+A to set focus to 'Drug Name' text area (to enter a new medication), Alt+Q to close the window. When the prescripton pops up, Alt+1 'Print & Paste into EMR'. Alt+2 to 'Fax & Paste into EMR'. 
 // @require http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js
 // @grant	   none
 // ==/UserScript==
@@ -42,6 +42,9 @@ window.addEventListener('keydown', function(theEvent) {
 			case theAltKey && theKey == 'a':
 				theTarget = document.getElementById("searchString");
 				theTarget.focus();
+				break;
+			case theAltKey && theKey == 'q':
+				window.close();
 				break;
 		}
 	}
