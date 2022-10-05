@@ -3,7 +3,6 @@
 // @namespace      oscar
 // @include        */casemgmt/forward.jsp?action=view&*
 // @include        */eform/efmformslistadd.jsp*
-// @include        */oscarConsultationRequest/ConsultationFormRequest.jsp*
 // @description		Within the E-chart: Alt+1 to Sign/Save/Bill. Alt+2 to Save. Alt+3 to Sign/Save. Alt+4 to Exit. Alt+W, Alt+Q, Alt+A to open Consultation, eForms, Ticklers respectively. Within Consultation: Alt+1 to 'Submit Consultation Request'.
 // @grant	   none
 // ==/UserScript==
@@ -16,8 +15,8 @@ const eFormsHotkey = 'a';
 const ticklerHotkey = 'z';
 
 
-(function(){
-document.addEventListener('keydown', function(theEvent) {
+
+window.addEventListener('keydown', function(theEvent) {
 	//theEvent.stopPropagation();
 	//theEvent.preventDefault();
 	// var theKeyCode = theEvent.charCode;// || event.which;
@@ -44,20 +43,8 @@ document.addEventListener('keydown', function(theEvent) {
 		case eFormsPage.test(currentURL) && theAltKey && theKey == eFormsHotkey:	// If on eForms page, hotkey to close window.
 			window.close();
 			break;
-		case consultationPage.test(currentURL):
-			switch(true){
-				case theAltKey && theKey == consultationHotkey:	// If on Consultation page, hotkey to close window.
-					window.close();
-					break;
-				case theAltKey && theKey == 1:
-					var theTarget = document.evaluate("//input[@value='Submit Consultation Request']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
-					theTarget.click();
-					break;					
-			} 
-		
 	}
 }, true);
-})();
 
 
 function eChartPageHotkeys(theEvent){
