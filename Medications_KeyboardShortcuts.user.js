@@ -12,6 +12,9 @@ const medPage = /oscarRx\/choosePatient\.do/
 let currentURL = window.location.href;
 // let rxPageLoaded = false;
 
+/*
+PURPOSE: keydown event listener. Alt+1 clicks the 'Save and Print' button, as long as the lightwindow isn't currently loaded.
+*/
 window.addEventListener('keydown', function(theEvent) {
 	//theEvent.stopPropagation();
 	//theEvent.preventDefault();
@@ -22,84 +25,124 @@ window.addEventListener('keydown', function(theEvent) {
 	const theCtrlKey = theEvent.ctrlKey;
 	const theShiftKey= theEvent.shiftKey;
 
-	switch(true){
-		case theAltKey && theKey == 1:
-			var theTarget = document.evaluate("//*[@id='saveButton']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
-			theTarget.click();
-			window.scrollTo(0, 30);
 
-			// console.log('hi1')
-			// let contents = document.getElementById("lightwindow_contents");
-			// console.log(contents);
-			// // let iframeDoc = iframe.contentWindow.document || iframe.contentWindow;
-			// // console.log(iframeDoc);
+	if(!document.getElementById("lightwindow_iframe")){  // check if lightwindow not loaded
+		switch(true){
+			case theAltKey && theKey == 1:
+				var theTarget = document.evaluate("//*[@id='saveButton']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+				theTarget.click();
+				window.scrollTo(0, 30);
+				// window.addEventListener('load', function(theEvent) {
+				// 	console.log("window done loading");
+				// });
 
-			// contents.ready(function(){
-			// 	console.log('hi3')
-			// });
+				lightwindowIFrameMutationObserver();
+				// setTimeout(prescriptionWindowListener, 3000);  // wait for the lightwindow to load, before the iframe can be 
 
-			// let lw = document.getElementById("lightwindow");
-			// console.log(lw);
-
-			// window.addEventListener('keydown', function(theEvent) {
-			// 	console.log('hi3')
-			// 	prescriptionIFrame2();
-			// }, true);
-
-
-			setTimeout(prescriptionIFrame, 5000);  // wait for the lightwindow to load, before the iframe can be 
-			// referenced
-
-			// setTimeout(testFn, 1000);
-			// setTimeout(testFn2, 2000);
-			// setTimeout(testFn2, 3000);
-			// setTimeout(testFn2, 4000);
-
-
-
-			break;
+				break;
+		}
 	}
 
 }, true);
 
-
-function prescriptionIFrame(){
+/*
+PURPOSE: adds keydown event listeners for the prescription lightwindow. Separate listeners for the iFrames and the top-level window.
+*/
+function prescriptionWindowListener(){
 	iFrameListener();
 
 	window.addEventListener('keydown', function(theEvent) {
-		keyDownAction(theEvent);
+		iFrameKeyDownAction(theEvent);
 	}, true);
-
-
 }
 
-
-// we need these listeners because window listener doesn't cover the pop-up lightwindow.
-// we need two listeners for the lightwindow since there are two additional documents (and therefore 2 additional windows). 
-// the second additional document is nested within the first additional document. The second additional document can't be referred to by the top level document, only by the first additional document.
+/*
+PURPOSE: attaches keydown event listeners to the two iframes on the prescription popup.
+NOTES:
+- we need these listeners because the usual window listener doesn't cover the pop-up lightwindow.
+- we need two listeners for the lightwindow since there are two additional documents (and therefore 2 additional windows). 
+- the second iframe is nested within the first iframe. The second iframe can't be directly referred to by the top level document, only via the first iframe.
+- these listeners need to be reloaded everytime the lightwindow iframe is closed and reopened.
+*/
 function iFrameListener(){
 	let iframe = document.getElementById("lightwindow_iframe");
-	let iframeDoc = iframe.contentWindow.document || iframe.contentWindow;
-
 	console.log(iframe);
+	let iframeDoc = iframe.contentWindow.document || iframe.contentWindow;
 	console.log(iframeDoc);
 	iframeDoc.addEventListener('keydown', function(theEvent) {
-		keyDownAction(theEvent);
+		iFrameKeyDownAction(theEvent);
 	}, true);	
-
-
-	console.log('hi10');
+	
 	let iframe2 = iframeDoc.getElementById("preview");
-	console.log(iframe2);
 	let iframeDoc2 = iframe2.contentWindow.document || iframe2.contentWindow;
-	console.log(iframeDoc2);
+	console.log(iframe2);
+	console.log(iframeDoc2);	
 	iframeDoc2.addEventListener('keydown', function(theEvent) {
-		keyDownAction(theEvent);
-	}, true);		
+		iFrameKeyDownAction(theEvent);
+	}, true);
+
+	console.log('iFrameListener added');
 }
 
-function keyDownAction(theEvent){
-	console.log('hi2');
+/*
+PURPOSE:
+- add click event listener to the Save and Print button. Activates the lightwindow mutationObserver.
+*/
+const inputButton = document.getElementById("saveButton");
+inputButton.addEventListener('click', function(theEvent){
+	console.log('clicked Save and Print button');
+	lightwindowIFrameMutationObserver();
+});
+
+
+/*
+PURPOSE: Use MutationObserver to wait for the prescription lightwindow to be fully loaded. Once loaded, activate the prescription light window listener and disconnect the MutationObserver.
+
+NOTES:
+- had difficulty directly checking when the inner iframes were fully loaded. I tried waiting for the iframe to load, then attach a mutationObserver to that, but it didn't work. As a proxy, checked when lightwindow_loading changes its style attribute to 'display:none', as this coincides with the iframes being fully loaded.
+
+*/
+function lightwindowIFrameMutationObserver(){
+	var mutationObserver = new MutationObserver(function(mutations) {
+
+		// mutations.forEach(function(mutation) {
+		// 	console.log(mutation);
+		// });
+
+		// console.log(mutations);
+		if (!!document.getElementById("lightwindow_iframe")){
+			let iframe = document.getElementById("lightwindow_iframe");
+			let iframeDoc = iframe.contentWindow.document || iframe.contentWindow;	
+			if (!!iframeDoc.getElementById("preview")){
+				// let iframe2 = iframeDoc.getElementById("preview");
+				// let iframeDoc2 = iframe2.contentWindow.document || iframe2.contentWindow;	
+				// mutationObserver.disconnect();	
+				if (document.getElementById("lightwindow_loading").getAttribute('style') == 'display: none;'){
+					console.log('no more mutations');
+					mutationObserver.disconnect();		
+					prescriptionWindowListener();
+				}
+			}
+		}
+	});
+
+	mutationObserver.observe(document.documentElement, {
+	  attributes: true,
+	  subtree: true,
+
+	  // characterData: true,
+	  // childList: true,
+	  // attributeOldValue: true,
+	  // characterDataOldValue: true
+	});
+}
+
+
+
+function iFrameKeyDownAction(theEvent){
+	console.log('hi10');
+	let iframe3 = document.getElementById("lightwindow_iframe");
+	console.log(iframe3);
 	const theKey = theEvent.key;
 	const theAltKey = theEvent.altKey;
 	const theCtrlKey = theEvent.ctrlKey;
@@ -108,7 +151,7 @@ function keyDownAction(theEvent){
 	let iframeDoc = iframe.contentWindow.document || iframe.contentWindow;
 
 	switch(true){
-		case theAltKey && theKey == 3:
+		case theAltKey && theKey == 1:
 			console.log(iframeDoc);
 			var theTarget = iframeDoc.evaluate("//input[@value='Print & Paste into EMR']",iframeDoc,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
 			console.log(theTarget);
@@ -116,6 +159,7 @@ function keyDownAction(theEvent){
 			rxPageLoaded = false;
 			break;
 		case theAltKey && theKey == 2:
+			console.log(iframeDoc);
 			var theTarget = iframeDoc.evaluate("//input[@value='Fax & Paste into EMR']",iframeDoc,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
 			theTarget.click();
 			rxPageLoaded = false;
@@ -125,7 +169,7 @@ function keyDownAction(theEvent){
 }
 
 
-// function prescriptionIFrame(){
+// function prescriptionWindowListener(){
 // 	let iframe = document.getElementById("lightwindow_iframe");
 // 	let iframeDoc = iframe.contentWindow.document || iframe.contentWindow;
 // 	console.log('hihihi');
