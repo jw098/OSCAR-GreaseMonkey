@@ -3,7 +3,7 @@
 // @namespace      oscar
 // @include        */oscarConsultationRequest/ConsultationFormRequest.jsp*
 // @include        */casemgmt/forward.jsp?action=view&*
-// @description		Within Consultation: Alt+1 to 'Submit Consultation Request'.
+// @description		Within Consultation: Alt+1 to 'Submit Consultation Request'. Automatically pastes Past Medical history, Social history, and Family history to the Clinical information text area.
 // @require http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js
 // @grant	   GM.setValue
 // @grant	   GM.getValue
@@ -45,6 +45,7 @@ if(eChartPage.test(currentURL)) {
 	GM.deleteValue('pMHx');
 	GM.deleteValue('famHx');
 }
+
 /*
 PURPOSE:
 - use mutation observer to wait for the desired elements to load before trying to access them.
@@ -88,10 +89,7 @@ function CPPMutationObserver(){
 	});
 }
 
-// useless.
-window.addEventListener('load', function (){
-	console.log('hihi');
-}, true)
+
 /*
 NOTE:
 - the location of Social History, Medical History, etc. aren't necessarily always in the same quadrant. So, need to find its div block first.
@@ -134,13 +132,48 @@ function getHistoryText(history){
 	
 }
 
-
+/*
+PURPOSE:
+- get the values stored in GreaseMonkey from the previous tab (E-chart) and paste it in the clinical information text area.
+NOTES:
+- GM.getValue runs asynchronously, and seems to run after the window is loaded.
+*/
 (async () => {	
-	console.log(await GM.getValue("socHx", "test"));
-	console.log(await GM.getValue("pMHx", "test"));
-	console.log(await GM.getValue("famHx", "test"));
+	if(consultationPage.test(currentURL)) {
+		// console.log(await GM.getValue("socHx", "test"));
+		// console.log(await GM.getValue("pMHx", "test"));
+		// console.log(await GM.getValue("famHx", "test"));
+
+		let	pMHx = await GM.getValue("pMHx", "test");
+		let	socHx = await GM.getValue("socHx", "test");
+		let	famHx = await GM.getValue("famHx", "test");
+
+		pMHx = checkEmptyHistoryText(pMHx);
+		socHx = checkEmptyHistoryText(socHx);
+		famHx = checkEmptyHistoryText(famHx);
+
+		let allHistoryText = "Past Medical History:\n" + pMHx + 
+			"\nSocial History:\n" + socHx + "\nFamily History:\n" + famHx;
+
+		console.log(allHistoryText);
+		let clinInfoTextBox = document.getElementById('clinicalInformation');
+		clinInfoTextBox.value = allHistoryText;
+	}
+
 })();
 
+/*
+PURPOSE
+- if history text is empty string, return "<no data>"
+*/
+function checkEmptyHistoryText(historyText){
+	if (historyText == ""){
+		return "<no data>\n"
+	}
+	else {
+		return historyText;
+	}
+}
 
 function getHistoryDivBlock(history){
 
