@@ -115,17 +115,17 @@ function getHistoryText(history){
 			case "Social History":
 				// console.log(historyTextList);
 				GM.setValue('socHx', historyTextList);
-				console.log("GM stored -> " + await GM.getValue("socHx", "test"));
+				// console.log("GM stored -> " + await GM.getValue("socHx", "test"));
 				break;
 			case "Medical History":
 				// console.log(historyTextList);
 				GM.setValue('pMHx', historyTextList);
-				console.log("GM stored -> " + await GM.getValue("pMHx", "test"));
+				// console.log("GM stored -> " + await GM.getValue("pMHx", "test"));
 				break;
 			case "Family History":
 				// console.log(historyTextList);
 				GM.setValue('famHx', historyTextList);
-				console.log("GM stored -> " + await GM.getValue("famHx", "test"));
+				// console.log("GM stored -> " + await GM.getValue("famHx", "test"));
 				break;			
 		}
 	})();

@@ -2,8 +2,7 @@
 // @name           EChart_KeyboardShortcuts
 // @namespace      oscar
 // @include        */casemgmt/forward.jsp?action=view&*
-// @include        */eform/efmformslistadd.jsp*
-// @description		Within the E-chart: Alt+1 to Sign/Save/Bill. Alt+2 to Save. Alt+3 to Sign/Save. Alt+4 to Exit. Alt+W, Alt+Q, Alt+A to open Consultation, eForms, Ticklers respectively. Within Consultation: Alt+1 to 'Submit Consultation Request'.
+// @description		Within the E-chart: Alt+1 to Sign/Save/Bill. Alt+2 to Save. Alt+3 to Sign/Save. Alt+4 to Exit. Alt+W, Alt+Q, Alt+A to open Consultation, eForms, Ticklers respectively.
 // @grant	   none
 // ==/UserScript==
 
@@ -40,9 +39,6 @@ window.addEventListener('keydown', function(theEvent) {
 		case eChartPage.test(currentURL):
 			eChartPageHotkeys(theEvent);
 			break;			
-		case eFormsPage.test(currentURL) && theAltKey && theKey == eFormsHotkey:	// If on eForms page, hotkey to close window.
-			window.close();
-			break;
 	}
 }, true);
 
