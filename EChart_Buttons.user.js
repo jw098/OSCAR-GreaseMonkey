@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name        EChartButtons
+// @name        EChart_Buttons
 // @namespace   Stanscripts
 // @description Various navigation buttons for e-chart screen (e.g. Lab req, Ultrasound req, X-ray req).  Set your own specific fid (form number ID) or Measurement groupName.
 // @include     */casemgmt/forward.jsp?action=view&demographic*
@@ -23,7 +23,7 @@ window.addEventListener("load", function(e) {
 }, false);
  
 function addBlock(id){
-	var targetDiv = document.getElementById('leftNavBar');
+	var targetDiv = document.getElementById('rightNavBar');
 	var theBlock = document.createElement('div');
 	theBlock.id = id;
 	theBlock.class = 'leftBox';
@@ -35,7 +35,7 @@ function addBlock(id){
 function addButtonEForm(id, value, fid, divBlock){
 	let targetDiv = document.getElementById(divBlock);
 	if (targetDiv == null){
-		targetDiv = document.getElementById('leftNavBar');
+		targetDiv = document.getElementById('rightNavBar');
 	}
 	var inputButton = document.createElement('input');
 	inputButton.id = id;
