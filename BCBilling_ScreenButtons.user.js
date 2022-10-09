@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name Billing Screen Buttons
 // @namespace   PMscripts
-// @description  Buttons to automatically bill age-related codes and other common codes. 
+// @description  On the BC Billing page, buttons to automatically bill age-related codes and other common codes. 
 // @include     *billing.do?billRegion=BC&billForm=*
 // @include     *billing.do?billRegion=BC&changeBillForm=*
 // @include     *billing.do?billRegion=BC&billForm=CFP&hotclick=*

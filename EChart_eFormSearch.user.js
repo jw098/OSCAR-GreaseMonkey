@@ -3,7 +3,7 @@
 // @namespace   Stanscript
 // @include    *efmformslistadd.jsp*
 // @include     */casemgmt/forward.jsp?action=view&demographic*
-// @description Search Eforms
+// @description In the E-chart, a text box to search e-forms by title. Alt+Shift+A to set focus to the text box.
 // @require   http://ajax.googleapis.com/ajax/libs/jquery/1.3.1/jquery.min.js
 // @version     15.0
 // @grant       none

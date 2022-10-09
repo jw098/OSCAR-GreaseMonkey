@@ -44,21 +44,31 @@ In Billing confirmation page: Alt+1 to Save Bill. Alt+A to scroll to bottom of p
 
 On the BC Billing page, buttons to automatically bill age-related codes and other common codes. 
 
+## Consultations_KeyboardShortcuts
+
+Within Consultations: Alt+1 to 'Submit Consultation Request'. Alt+W to close the window. Automatically pastes Past Medical history, Social history, and Family history to the Clinical information text area.
+
 ## EChart_Buttons
 
-Various navigation buttons for e-chart screen (e.g. Lab req, Ultrasound req, X-ray req).  Set your own specific fid (form number ID) or Measurement groupName.
+Various navigation buttons for e-chart screen (e.g. Lab req, Ultrasound req, X-ray req).  Set your own specific fid (form number ID) or Measurement groupName. Alt+Shift+Q,W,Z opens the eForms specified.
+
+## EChart_eFormSearch
+
+In the E-chart, a text box to search e-forms by title. Alt+Shift+A to set focus to the text box.
 
 ## EChart_KeyboardShortcuts
 
 Within the E-chart: Alt+1 to Sign/Save/Bill. Alt+2 to Save. Alt+3 to Sign/Save. Alt+4 to Exit. Alt+W, Alt+Q, Alt+A to open/close Consultation, eForms, Ticklers respectively. 
 
-Within Consultation: Alt+1 to 'Submit Consultation Request'.
-
 ## Inbox_KeyboardShortcuts
 
 Within Inbox: Alt+1 to open first item. 
 
-Within the Lab result: Alt+1 to Acknowledge and label Labs. Alt+Q to open E-chart. Alt+W to open Tickler. Alt+Z to only label Labs. 
+Within the Lab result: Alt+1 to Acknowledge and label labs with the actual names of each test (as opposed to cryptic labels like HAEM1, CHEM4, etc.). Alt+Q to open E-chart. Alt+W to open Tickler. Alt+Z to only label Labs without acknowleding.
+
+## Medications_KeyboardShortcuts
+
+Within Medications, Alt+1 to 'Save And Print', Alt+A to set focus to 'Drug Name' text area (to enter a new medication), Alt+Q to close the window. When the prescripton pops up, Alt+1 'Print & Paste into EMR'. Alt+2 to 'Fax & Paste into EMR'. 
 
 ## Schedule_KeyboardShortcuts
 

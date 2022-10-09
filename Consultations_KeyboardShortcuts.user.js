@@ -3,7 +3,7 @@
 // @namespace      oscar
 // @include        */oscarConsultationRequest/ConsultationFormRequest.jsp*
 // @include        */casemgmt/forward.jsp?action=view&*
-// @description		Within Consultation: Alt+1 to 'Submit Consultation Request'. Automatically pastes Past Medical history, Social history, and Family history to the Clinical information text area.
+// @description		Within Consultations: Alt+1 to 'Submit Consultation Request'. Automatically pastes Past Medical history, Social history, and Family history to the Clinical information text area.
 // @require http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js
 // @grant	   GM.setValue
 // @grant	   GM.getValue
