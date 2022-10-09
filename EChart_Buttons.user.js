@@ -8,17 +8,40 @@
 // ==/UserScript==
 
 
+const labReqFID = 510;
+const xrayReqFID = 359;
+const usReqFID = 293;
+
+window.addEventListener("keydown", function(theEvent){
+	const theKey = theEvent.key;
+	const theAltKey = theEvent.altKey;
+	const theCtrlKey = theEvent.ctrlKey;
+	const theShiftKey= theEvent.shiftKey;
+	switch(true){
+		case theShiftKey && theAltKey && theKey == "Q":
+			openLink(labReqFID);
+			break;
+		case theShiftKey && theAltKey && theKey == 'W':
+			openLink(xrayReqFID);
+			break;
+		case theShiftKey && theAltKey && theKey == 'Z':
+			openLink(usReqFID);
+			break;
+	}
+}, false);
+
+
 window.addEventListener("load", function(e) {
 	let buttonBlock = 'buttonBlock1';
 	addBlock(buttonBlock);
-	addButtonEForm('buttonOpenXray', 'X-ray', 359, buttonBlock);
-	addButtonEForm('buttonOpenLabReq', 'Lab Req', 275, buttonBlock);
-	addButtonEForm('buttonOpenUS', 'U/S', 293, buttonBlock);
+	addButtonEForm('buttonOpenLabReq', 'Lab Req', labReqFID, buttonBlock);
+	addButtonEForm('buttonOpenXray', 'X-ray', xrayReqFID, buttonBlock);
+	addButtonEForm('buttonOpenUS', 'U/S', usReqFID, buttonBlock);
 	
 	buttonBlock = 'buttonBlock2';
 	addBlock(buttonBlock);
-	addButtonEForm('buttonOpenXray2', 'X-ray2', 71, buttonBlock);
 	addButtonEForm('buttonOpenLabReq2', 'Lab Req2', 191, buttonBlock);
+	addButtonEForm('buttonOpenXray2', 'X-ray2', 71, buttonBlock);
 	addButtonEForm('buttonOpenUS2', 'U/S2', 211, buttonBlock);
 }, false);
  
