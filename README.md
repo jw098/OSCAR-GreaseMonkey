@@ -70,7 +70,11 @@ Within the Lab result: Alt+1 to Acknowledge and label labs with the actual names
 
 ## Medications_KeyboardShortcuts
 
-Within Medications, Alt+1 to 'Save And Print', Alt+A to set focus to 'Drug Name' text area (to enter a new medication), Alt+Q to close the window. When the prescripton pops up, Alt+1 'Print & Paste into EMR'. Alt+2 to 'Fax & Paste into EMR'. 
+Within Medications, Alt+1 to 'Save And Print', Alt+A to set focus to 'Drug Name' text area (to enter a new medication), Alt+Q to close the window. 
+
+When the prescription print window pops up, Alt+1 to 'Print & Paste into EMR'. Alt+2 to 'Fax & Paste into EMR'. 
+
+When closing the Medications page, a pop-up confirmation dialog will appear if there are medications pending submission.
 
 ## Schedule_KeyboardShortcuts
 

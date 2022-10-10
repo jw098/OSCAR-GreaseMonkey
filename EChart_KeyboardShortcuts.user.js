@@ -2,7 +2,7 @@
 // @name           EChart_KeyboardShortcuts
 // @namespace      oscar
 // @include        */casemgmt/forward.jsp?action=view&*
-// @description		Within the E-chart: Alt+1 to Sign/Save/Bill. Alt+2 to Save. Alt+3 to Sign/Save. Alt+4 to Exit. Alt+W, Alt+Q, Alt+A to open Consultation, eForms, Ticklers respectively. When the CPP pop-up windows are open (e.g. Social History, Medical History), Alt+1 to Sign & Save, Escape to close the pop-up window.
+// @description		Within the E-chart: Alt+1 to Sign/Save/Bill. Alt+2 to Save. Alt+3 to Sign/Save. Alt+4 to Exit. Alt+W, Alt+Q, Alt+A to open Consultation, eForms, Ticklers respectively. When the CPP pop-up windows are open (e.g. for Social History, Medical History, etc.), Alt+1 to Sign & Save, Escape to close the pop-up window.
 // @grant	   none
 // ==/UserScript==
 

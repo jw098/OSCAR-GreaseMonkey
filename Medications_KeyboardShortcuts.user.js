@@ -2,7 +2,7 @@
 // @name           Medications_KeyboardShortcuts
 // @namespace      oscar
 // @include        */oscarRx/choosePatient.do*
-// @description		Within Medications, Alt+1 to 'Save And Print', Alt+A to set focus to 'Drug Name' text area (to enter a new medication), Alt+Q to close the window. When the prescripton pops up, Alt+1 'Print & Paste into EMR'. Alt+2 to 'Fax & Paste into EMR'. 
+// @description		Within Medications, Alt+1 to 'Save And Print', Alt+A to set focus to 'Drug Name' text area (to enter a new medication), Alt+Q to close the window. When the prescription print window pops up, Alt+1 to 'Print & Paste into EMR'. Alt+2 to 'Fax & Paste into EMR'. When closing the Medications page, a pop-up confirmation dialog will appear if there are medications pending submission.
 // @require http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js
 // @grant	   none
 // ==/UserScript==
@@ -23,7 +23,6 @@ window.addEventListener('keydown', function(theEvent) {
 	const theAltKey = theEvent.altKey;
 	const theCtrlKey = theEvent.ctrlKey;
 	const theShiftKey= theEvent.shiftKey;
-
 
 	if(!document.getElementById("lightwindow_iframe")){  // check if lightwindow not loaded
 		let theTarget;
@@ -183,3 +182,44 @@ function lightwindowIFrameMutationObserver(){
 
 
 
+/*
+NOTE:
+- only fires if there is any interaction on the page.
+*/
+window.onbeforeunload = confirmExit;
+
+
+function confirmExit() {
+	//prescriptionsPendingSubmit();
+	if (needConfirmClose()) {
+		return "You have attempted to leave this page. If you have made any changes to the fields without clicking the Save button, your changes will be lost. Are you sure you want to exit this page?";
+	}
+}
+
+/*
+NOTE:
+- return true if there are pending prescriptions and the light window is not active.
+- No close confirmation needed if the light window is active, so that it doesn't interfere with the normal Print/Fax -> window close. Also, the light window being active means that the prescription has been saved.
+*/
+function needConfirmClose(){
+	return prescriptionsPendingSubmit() && !isLightWindowActive();
+}
+
+/*
+PURPOSE:
+- return true if there are presriptions pending submission.
+*/
+function prescriptionsPendingSubmit(){
+	let target = $("[id^='set_']");
+	// console.log(target.length > 0);
+	return target.length > 0;
+}
+
+/*
+PURPOSE: return true if light window is active
+NOTE:
+- lightwindow_iframe element is only present when the light window is active.
+*/
+function isLightWindowActive(){
+	return !!document.getElementById("lightwindow_iframe");
+}
