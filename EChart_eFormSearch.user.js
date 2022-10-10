@@ -3,7 +3,7 @@
 // @namespace   Stanscript
 // @include    *efmformslistadd.jsp*
 // @include     */casemgmt/forward.jsp?action=view&demographic*
-// @description In the E-chart, a text box to search e-forms by title. Alt+Shift+A to set focus to the text box.
+// @description In the E-chart, a search box to search e-forms by title. Alt+Shift+A toggles focus between e-forms search box and the note text area.
 // @require   http://ajax.googleapis.com/ajax/libs/jquery/1.3.1/jquery.min.js
 // @version     15.0
 // @grant       none
@@ -73,7 +73,12 @@ $(document).ready(function() {
         const theShiftKey= theEvent.shiftKey;
         switch(true){
             case theShiftKey && theAltKey && theKey == "A":
-                document.getElementById("referral_name").focus();
+                if(document.activeElement == document.getElementById("caseNote_note0")){
+                    document.getElementById("referral_name").focus();
+                }
+                else{
+                    document.getElementById("caseNote_note0").focus();
+                }
                 break;
             }
     }, false);

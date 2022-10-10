@@ -54,7 +54,7 @@ Various navigation buttons for e-chart screen (e.g. Lab req, Ultrasound req, X-r
 
 ## EChart_eFormSearch
 
-In the E-chart, a text box to search e-forms by title. Alt+Shift+A to set focus to the text box.
+In the E-chart, a search box to search e-forms by title. Alt+Shift+A toggles focus between e-forms search box and the note text area.
 
 ## EChart_KeyboardShortcuts
 
