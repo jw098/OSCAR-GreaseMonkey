@@ -68,6 +68,8 @@ Within Inbox: Alt+1 to open first item.
 
 Within the Lab result: Alt+1 to Acknowledge and label labs with the actual names of each test (as opposed to cryptic labels like HAEM1, CHEM4, etc.). Alt+Q to open E-chart. Alt+W to open Tickler. Alt+Z to only label Labs without acknowleding.
 
+Also, the label of the previous version of the lab result is shown.
+
 ## Medications_KeyboardShortcuts
 
 Within Medications, Alt+1 to 'Save And Print', Alt+A to set focus to 'Drug Name' text area (to enter a new medication), Alt+Q to close the window. 

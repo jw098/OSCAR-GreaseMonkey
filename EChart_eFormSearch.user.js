@@ -90,33 +90,46 @@ $(document).ready(function() {
 
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-                var str = xmlhttp.responseText; //local variable
-                if (!str) {
+                // gets all the text on the page specificed by newURL below (e.g. the eForm library page)
+                var str = xmlhttp.responseText;   
+                if (!str) { 
                     return;
                 }
-                //alert(str)
 
-                var myRe = /<td width="30%" style="padding-left: 7px">\n\s*<.*\n\s*.*\n\s*.*/g; //for the measurement
+                // regular expression to get the elements that surround each eForm name in the eForm library.
+                var myRe = /<td width="30%" style="padding-left: 7px">\n\s*<.*\n\s*.*\n\s*.*/g;
+
+                // regular expression to extract the URL for each eForm in the library.
                 var myRe2 = /efmformadd.*&appointment/g; //for onclickvalue
                 var myArray;
                 var myArray2
                 var i = 0;
-                while ((myArray = myRe.exec(str)) !== null) {
-                    myArray2 = myRe2.exec(str)
-                    y = $(myArray.toString()).text()
-                    //alert(y)
-                    z = myArray2.toString()+ "=&parentAjaxId=eforms"
-                    //alert(z)
-                    var cpvalue = y
-                    var cptext = z
-                    //alert(cpvalue)
-                    //alert(cptext)
+
+                //regex gets the next eForm name on the library page.
+                while ((myArray = myRe.exec(str)) !== null) {                    
+                    // regex gets the next eForm URL on the library page.
+                    myArray2 = myRe2.exec(str);
+
+                    /*
+                    - myArray.toString() is HTML text that surrounds the form name.
+                    - $() converts it into an HTML element. 
+                    - .text() gets its inner text, which is the eForm name.
+                    */
+                    y = $(myArray.toString()).text();
+
+                    // the eForm URL.
+                    z = myArray2.toString()+ "=&parentAjaxId=eforms";
+
+                    var cpvalue = y;
+                    var cptext = z;
+
+                    // adds the eForm name and URL to the CPP element in the HTML.
                     $('#CP').append($("<option>").attr('value', cptext).text(cpvalue));
                     i = i + 1;
                 }
             }
         }
-        xmlhttp.open("GET", newURL, false);
+        xmlhttp.open("GET", newURL, false);  // newURL is the URL for the eForm library page.
         xmlhttp.send();
     }
     getMeasures();

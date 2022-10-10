@@ -5,14 +5,10 @@
 // @include        */dms/inboxManage*
 // @include        */dms/showDocument*
 // @include        */dms/MultiPageDocDisplay.jsp*
-// @description		Within Inbox: Alt+1 to open first item. Within the Lab result: Alt+1 to Acknowledge and label labs with the actual names of each test (as opposed to cryptic labels like HAEM1, CHEM4, etc.). Alt+Q to open E-chart. Alt+W to open Tickler. Alt+Z to only label Labs without acknowleding.
+// @description		Within Inbox: Alt+1 to open first item. Within the Lab result: Alt+1 to Acknowledge and label labs with the actual names of each test (as opposed to cryptic labels like HAEM1, CHEM4, etc.). Alt+Q to open E-chart. Alt+W to open Tickler. Alt+Z to only label Labs without acknowleding. Also, the label of the previous version of the lab result is shown.
 // @require   https://ajax.googleapis.com/ajax/libs/jquery/1.3.1/jquery.min.js
 // @grant	   none
 // ==/UserScript==
-
-// created by Darius Opensource
-
-
 
 
 
@@ -31,6 +27,7 @@ window.addEventListener('keydown', function(theEvent) {
 	const ticklerPage = /tickler\/ForwardDemographicTickler/
 	const documentPage = /dms\/showDocument/
 	
+
 	switch(true){
 		case (!!document.getElementById("docViews") &&	// If in the inbox, whose XML contains id = "docViews"
 				theAltKey && theKey == 1):  			// Alt+1: Open first item in inbox						
@@ -53,34 +50,6 @@ window.addEventListener('keydown', function(theEvent) {
 				case (theAltKey && theKey == 'w'):  							// Alt+W: open Tickler
 					var theTarget = document.evaluate("//input[@value='Tickler']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
 					theTarget.click();
-// 					$( document ).ready(function() {
-
-
-// 						// var winOpen = window.open;
-// 						// window.open = function() {
-// 						//     var win = winOpen.apply(this, arguments);
-// 						//     console.log(win);
-// 						//     console.log("hi");
-// 						//     // windows.push(win);
-// 						//     // return win;
-// 						// }
-// ;						
-// 						$('input[value=Tickler]').click(function(event) {
-// 							  	console.log($(event.target));
-// 							  	window.blur;							  	
-// 							  	console.log(window.location.href);
-							  	
-// 							  	// console.log($('div').html(event.target.href));
-// 	    					// 	console.log($(this).attr('href'));
-// 							});
-// 						$('input[value=Tickler]').click();
-						
-					
-// 						// let windowList = windows.getAll();
-// 						// console.log(windowList);
-						
-// 					});
-
 					break;
 				case (labResultPage.test(currentURL) && theAltKey && theKey == 'z'):  // Alt+Z: if in lab result page: label lab results.
 					labelLabs();	
@@ -118,6 +87,80 @@ $("[id^='labelspan']").before('<br />');
 $("[id^='labelspan']").after('<br />');
 
 
+// $("[id^='labelspan'] > i:first-child").before($("<p>"));
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// Shows old version of Label.
+///////////////////////////////////////////////////////////////////////////////////////////
+
+
+/*
+NOTE
+- no need to wait until document loads to run this. 
+  - possibly because xmlhttp only runs onreadystatechange?
+*/
+getPrevVersionLabel();
+
+/*
+PURPOSE
+- get URL of the previous version of lab results.
+*/
+function prevVersionURL(){
+	const allVersionElementOnly = document.querySelectorAll('a[href^="labDisplay.jsp?segmentID"]');
+	if (allVersionElementOnly == null){
+		return "";
+	}
+	const allVersions = allVersionElementOnly[0].parentNode.childNodes;
+
+	let prevNode = "";
+	for (let i = 0; i < allVersions.length; i++){
+		currentNode = allVersions[i];
+		if (currentNode.nodeType == Node.TEXT_NODE && currentNode.textContent.includes("v")){
+			break;
+		}
+		prevNode = currentNode;
+	}
+	return prevNode.href;
+}
+
+
+// function prevVersionURL_old(){
+// 	// let versionsDiv = document.evaluate("/html/body/div/form[3]/table/tbody/tr/td/table[2]/tbody/tr[1]/td/div",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+// 	const allVersions = document.querySelectorAll('a[href^="labDisplay.jsp?segmentID"]');
+// 	const prevVersion = allVersions[allVersions.length -2];
+// 	if(prevVersion == null){
+// 		return "";
+// 	}
+// 	else {
+// 		return prevVersion.href;
+// 	}
+	
+// }
+
+function getPrevVersionLabel() {
+    let xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+            const prevVersionXMLText = xmlhttp.responseText;   
+            if (!prevVersionXMLText) { 
+                return;
+            }
+
+            const prevVersionHTML = new DOMParser().parseFromString(prevVersionXMLText, "text/html");
+            const oldLabelElement = prevVersionHTML.querySelectorAll("span[id^='labelspan_'] > i");
+            const oldLabelText = oldLabelElement[0].textContent;
+            const oldLabelResultOnly = oldLabelText.split(" ")[1];
+            console.log(oldLabelResultOnly);
+
+            $("[id^='labelspan']").append('<br />');
+            $("[id^='labelspan']").append($("<i>").html("Old: " + "&nbsp;&nbsp;&nbsp;" + oldLabelResultOnly));
+
+        }
+    };
+	xmlhttp.open("GET", prevVersionURL(), true);
+	xmlhttp.send();
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Label Labs. Automatically labels lab results.
@@ -129,8 +172,9 @@ function labelLabs(){
 	const allLabResults = document.querySelectorAll('table[name="tblDiscs"]>tbody>tr>td:first-child>:is(a:first-child, span)');
 	let keyLabResults = extractKeyLabResults(allLabResults);
 	$("input[id*=acklabel]").val(keyLabResults);
-	$("button[id*=createLabel]").click()
-	console.log(keyLabResults);
+	$("button[id*=createLabel]").click();
+
+	// console.log(keyLabResults);
 	
 	showKeyLabResultsTextBox(keyLabResults);
 
