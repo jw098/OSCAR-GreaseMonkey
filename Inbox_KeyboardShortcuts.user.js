@@ -82,10 +82,12 @@ function getNextTarget() {
 /*
 PURPOSE:
 - adds a line break before and after the label text.
+- insert another line element for the old label text.
 */
 $("[id^='labelspan']").before('<br />');
 $("[id^='labelspan']").after('<br />');
-
+$("[id^='labelspan']").append('<br />');
+$("[id^='labelspan']").append($("<i>"));
 
 // $("[id^='labelspan'] > i:first-child").before($("<p>"));
 
@@ -124,19 +126,6 @@ function prevVersionURL(){
 }
 
 
-// function prevVersionURL_old(){
-// 	// let versionsDiv = document.evaluate("/html/body/div/form[3]/table/tbody/tr/td/table[2]/tbody/tr[1]/td/div",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
-// 	const allVersions = document.querySelectorAll('a[href^="labDisplay.jsp?segmentID"]');
-// 	const prevVersion = allVersions[allVersions.length -2];
-// 	if(prevVersion == null){
-// 		return "";
-// 	}
-// 	else {
-// 		return prevVersion.href;
-// 	}
-	
-// }
-
 function getPrevVersionLabel() {
     let xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function() {
@@ -149,11 +138,11 @@ function getPrevVersionLabel() {
             const prevVersionHTML = new DOMParser().parseFromString(prevVersionXMLText, "text/html");
             const oldLabelElement = prevVersionHTML.querySelectorAll("span[id^='labelspan_'] > i");
             const oldLabelText = oldLabelElement[0].textContent;
-            const oldLabelResultOnly = oldLabelText.split(" ")[1];
-            console.log(oldLabelResultOnly);
+            const oldLabelResultOnly = oldLabelText.split("Label:")[1];
 
-            $("[id^='labelspan']").append('<br />');
-            $("[id^='labelspan']").append($("<i>").html("Old: " + "&nbsp;&nbsp;&nbsp;" + oldLabelResultOnly));
+            // $("[id^='labelspan']").append('<br />');
+            // $("[id^='labelspan']").append($("<i>").html("Old: " + "&nbsp;&nbsp;&nbsp;" + oldLabelResultOnly));
+            $("[id^='labelspan'] > i:nth-child(3)").html("Old:" + "&nbsp;&nbsp;&nbsp;" + oldLabelResultOnly);
 
         }
     };
