@@ -2,7 +2,7 @@
 // @name           EChart_KeyboardShortcuts
 // @namespace      oscar
 // @include        */casemgmt/forward.jsp?action=view&*
-// @description		Within the E-chart: Alt+1 to Sign/Save/Bill. Alt+2 to Save. Alt+3 to Sign/Save. Alt+4 to Exit. Alt+W, Alt+Q, Alt+A to open Consultation, eForms, Ticklers respectively.
+// @description		Within the E-chart: Alt+1 to Sign/Save/Bill. Alt+2 to Save. Alt+3 to Sign/Save. Alt+4 to Exit. Alt+W, Alt+Q, Alt+A to open Consultation, eForms, Ticklers respectively. When the CPP pop-up windows are open (e.g. Social History, Medical History), Alt+1 to Sign & Save, Escape to close the pop-up window.
 // @grant	   none
 // ==/UserScript==
 
@@ -32,14 +32,16 @@ window.addEventListener('keydown', function(theEvent) {
 	const consultationPage = /oscarConsultationRequest\/ConsultationFormRequest\.jsp/;
 	const ticklerPage = /tickler\/ticklerAdd\.jsp/;
 	
-	
-	// console.log(currentURL);
-	// console.log(eChartPage.test(currentURL));
-	switch(true){
-		case eChartPage.test(currentURL):
-			eChartPageHotkeys(theEvent);
-			break;			
+	// console.log(CPPWindowPresent());
+
+	if (CPPWindowPresent()){
+		console.log('cpp window present');
+		CPPWindowHotkeys(theEvent);
 	}
+	else {
+		eChartPageHotkeys(theEvent);
+	}
+
 }, true);
 
 
@@ -79,6 +81,34 @@ function eChartPageHotkeys(theEvent){
 			break;
 		case theAltKey && theKey == 4: // Exit
 			var theTarget = document.evaluate("id('save')/span/input[contains(@src,'system-log-out.png')]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+			theTarget.click();
+			break;
+
+	}
+}
+
+/*
+PURPOSE:
+- return true if the CPP popup window is present.
+*/
+function CPPWindowPresent(){
+	return document.getElementById('frmIssueNotes').offsetParent != null;
+}
+
+
+function CPPWindowHotkeys(theEvent){
+	const theKey = theEvent.key;
+	const theAltKey = theEvent.altKey;
+	const theCtrlKey = theEvent.ctrlKey;
+	const theShiftKey= theEvent.shiftKey;
+
+	switch(true){
+		case theAltKey && theKey == 1:  // Sign & Save
+			var theTarget = document.evaluate("id('frmIssueNotes')/span/input[contains(@src,'note-save.png')]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+			theTarget.click();
+			break;
+		case theKey == 'Escape':
+			var theTarget = document.evaluate("id('frmIssueNotes')/span/input[contains(@src,'system-log-out.png')]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
 			theTarget.click();
 			break;
 	}

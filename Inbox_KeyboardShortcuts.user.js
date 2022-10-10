@@ -13,6 +13,9 @@
 // created by Darius Opensource
 
 
+
+
+
 window.addEventListener('keydown', function(theEvent) {
 	//theEvent.stopPropagation();
 	//theEvent.preventDefault();
@@ -105,6 +108,17 @@ function getNextTarget() {
 	
 	return document.evaluate("//tbody[@id='summaryBody']/tr[" + index + "]/td[2]/a",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
 }
+
+
+/*
+PURPOSE:
+- adds a line break before and after the label text.
+*/
+$("[id^='labelspan']").before('<br />');
+$("[id^='labelspan']").after('<br />');
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Label Labs. Automatically labels lab results.
 ///////////////////////////////////////////////////////////////////////////////////////////

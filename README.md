@@ -60,6 +60,8 @@ In the E-chart, a text box to search e-forms by title. Alt+Shift+A to set focus 
 
 Within the E-chart: Alt+1 to Sign/Save/Bill. Alt+2 to Save. Alt+3 to Sign/Save. Alt+4 to Exit. Alt+W, Alt+Q, Alt+A to open/close Consultation, eForms, Ticklers respectively. 
 
+When the CPP pop-up windows are open (e.g. for Social History, Medical History, etc.), Alt+1 to Sign & Save, Escape to close the pop-up window.
+
 ## Inbox_KeyboardShortcuts
 
 Within Inbox: Alt+1 to open first item. 
