@@ -28,7 +28,7 @@ Before installation, ensure the GreaseMonkey/Tampermonkey extension has been ins
 
 # Disclaimer
 
-This collection of scripts has only been tested on one implementation of OSCAR EMR, in Classic view. Feel free to contact me here if you notice any bugs.
+This collection of scripts has only been tested on the WELL Health implementation of OSCAR EMR, in Classic view. Feel free to contact me here if you notice any bugs.
 
 # What the scripts do
 

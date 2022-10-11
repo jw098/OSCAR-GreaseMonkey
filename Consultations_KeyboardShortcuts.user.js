@@ -12,7 +12,6 @@
 
 const consultationHotkey = 'w';
 
-
 let currentURL = window.location.href;
 const eChartPage = /casemgmt\/forward\.jsp\?action\=view\&/;
 const consultationPage = /oscarConsultationRequest\/ConsultationFormRequest\.jsp/;
@@ -174,12 +173,4 @@ function checkEmptyHistoryText(historyText){
 		return historyText;
 	}
 }
-
-function getHistoryDivBlock(history){
-
-}
-
-
-
-
 

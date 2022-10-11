@@ -142,7 +142,7 @@ function getPrevVersionLabel() {
 
             // $("[id^='labelspan']").append('<br />');
             // $("[id^='labelspan']").append($("<i>").html("Old: " + "&nbsp;&nbsp;&nbsp;" + oldLabelResultOnly));
-            $("[id^='labelspan'] > i:nth-child(3)").html("Old:" + "&nbsp;&nbsp;&nbsp;" + oldLabelResultOnly);
+            $("[id^='labelspan'] > i:nth-child(3)").html("Prev:" + "&nbsp;" + oldLabelResultOnly);
 
         }
     };
