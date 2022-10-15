@@ -32,6 +32,10 @@ This collection of scripts has only been tested on the WELL Health implementatio
 
 # What the scripts do
 
+## Allergy_QuickAdd
+
+Buttons to quickly add allergies. On Medications: Alt+Z to quickly add NKDA.
+
 ## BCBilling_KeyboardShortcuts
 
 In the BC Billing page: Alt+1 to Continue, Alt+Q to input in person visit billing code, Alt+W to input telehealth visit billing code, Alt+A to set focus to Dx code. The above keyboard shortcuts will also scroll to the bottom of the page. 
