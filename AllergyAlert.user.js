@@ -7,7 +7,10 @@
 // @include        */oscarRx/showAllergy.do*
 // @include        */oscarRx/deleteAllergy.do*
 // @include        */oscarRx/addReaction2.do*
+// @include        *uptodate.com*
+
 // @description		Alert the user if Allergies haven't yet been set. On add Allergy page, inserted an Auto NKDA button, which automatically adds NKDA to the allergy list.
+
 // @grant						GM.setValue
 // @grant						GM.getValue
 // @grant						GM.deleteValue
@@ -96,3 +99,103 @@ function addButtonNKDAListener(){
 	}
 })();
 
+//////////////////////////////////////////////////////////////////////////////////////
+// Jquery UI
+
+// @require     http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js
+// @require     http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js
+
+
+// @require 				http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js
+// @require 				http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js
+
+// jQuery.noConflict( true );
+// var jQuery_2_1_1 = $.noConflict(true);
+
+// $("head").append (
+//     '<link '
+//   + 'href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/le-frog/jquery-ui.min.css" '
+//   + 'rel="stylesheet" type="text/css">'
+// );
+
+// console.log($( "#AutoNumber1" ));
+
+// jQuery_2_1_1( "#appContainer" ).dialog({
+//   resizable: false,
+//   height: "auto",
+//   width: 400,
+//   modal: true,
+//   buttons: {
+//     "Delete all items": function() {
+//       $( this ).dialog( "close" );
+//     },
+//     Cancel: function() {
+//       $( this ).dialog( "close" );
+//     }
+//   }
+// });
+
+// $( function() {
+// $( "#appContainer" ).dialog({
+//   resizable: false,
+//   height: "auto",
+//   width: 400,
+//   modal: true,
+//   buttons: {
+//     "Delete all items": function() {
+//       $( this ).dialog( "close" );
+//     },
+//     Cancel: function() {
+//       $( this ).dialog( "close" );
+//     }
+//   }
+// });
+// } );
+
+// $( "#AutoNumber1" ).dialog({
+//   resizable: false,
+//   height: "auto",
+//   width: 400,
+//   modal: true,
+//   buttons: {
+//     "Delete all items": function() {
+//       $( this ).dialog( "close" );
+//     },
+//     Cancel: function() {
+//       $( this ).dialog( "close" );
+//     }
+//   }
+// });
+
+// jQuery_2_1_1( "#AutoNumber1" ).dialog({
+//   resizable: false,
+//   height: "auto",
+//   width: 400,
+//   modal: true,
+//   buttons: {
+//     "Delete all items": function() {
+//       jQuery_2_1_1( this ).dialog( "close" );
+//     },
+//     Cancel: function() {
+//       jQuery_2_1_1( this ).dialog( "close" );
+//     }
+//   }
+// });
+
+
+// jQuery_2_1_1( function() {
+// jQuery_2_1_1( "#AutoNumber1" ).dialog({
+//   resizable: false,
+//   height: "auto",
+//   width: 400,
+//   modal: true,
+//   buttons: {
+//     "Delete all items": function() {
+//       jQuery_2_1_1( this ).dialog( "close" );
+//     },
+//     Cancel: function() {
+//       jQuery_2_1_1( this ).dialog( "close" );
+//     }
+//   }
+// });
+// } );
