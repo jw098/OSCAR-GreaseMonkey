@@ -7,10 +7,7 @@
 // @include        */oscarRx/showAllergy.do*
 // @include        */oscarRx/deleteAllergy.do*
 // @include        */oscarRx/addReaction2.do*
-// @include        *uptodate.com*
-
-// @description		Alert the user if Allergies haven't yet been set. On add Allergy page, inserted an Auto NKDA button, which automatically adds NKDA to the allergy list.
-
+// @description		Buttons to quickly add allergies. On Medications: Alt+Z to quickly add NKDA.
 // @grant						GM.setValue
 // @grant						GM.getValue
 // @grant						GM.deleteValue
@@ -54,7 +51,12 @@ let currentURL = window.location.href;
 switch(true){
 	case medicationPage1.test(currentURL) || medicationPage2.test(currentURL):  // medication page
 		GM.setValue('nextPage', 'stop');
-		addButtonNKDA_FromMedPage();
+		if(areAllergiesNotSet()){
+			addButtonNKDA_FromMedPage();
+			addPenicillinButton_FromMedPage();
+			addSulfaButton_FromMedPage();
+		}
+		medPageKeydownListener();
 		break;
 	case addAllergyPage1.test(currentURL) || addAllergyPage2.test(currentURL) || addAllergyPage3.test(currentURL):  // add allergy page
 		(async () => {		
@@ -62,15 +64,29 @@ switch(true){
 			console.log('nextPage: ' + nextPage);
 			switch (nextPage){
 				case 'toAddReactionThenAddAllergyThenMedsThenStop':  // from Med. going to Add Reaction
-					fromAddAllergyToAddReaction();
+					NKDAFromAddAllergyToAddReaction();
 					GM.setValue('nextPage', 'toAddAllergyThenMedsThenStop');			
 					break;
 				case 'toMedsThenStop': // from Add Reaction. going to Med.
 					fromAddAllergyToMedications();
 					GM.setValue('nextPage', 'stop');
 					break;
+				case 'PENtoAddReaction': 
+					penFromAddAllergyToAddReaction();
+					GM.setValue('nextPage', 'stop');
+					break;					
+				case 'SULFAtoAddReaction': 
+					sulfaFromAddAllergyToAddReaction();
+					GM.setValue('nextPage', 'stop');
+					break;
 				default:
-					addButtonNKDA_FromAddAllergy();			
+					if(areAllergiesNotSet()){
+						addButtonNKDA_FromAddAllergy();	
+					}
+					addPenicillinButton_FromAddAllergy();
+					addSulfaButton_FromAddAllergy();
+					
+					medPageKeydownListener();	
 			}
 
 		})();
@@ -83,6 +99,8 @@ switch(true){
 					fromAddReactiontoAddAllergy();
 					GM.setValue('nextPage', 'toMedsThenStop');
 					break;
+				default:
+					addButtonAddAllergyThenToMeds_FromAddReaction();
 			}
 			
 		})();
@@ -91,12 +109,35 @@ switch(true){
 }
 
 /*
+- returns true if allergies have not been set.
+*/
+function areAllergiesNotSet(){
+	let allergyEntry = document.evaluate("/html/body/table/tbody/tr[2]/td[1]/div/p[3]/a",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+	return allergyEntry == null;
+}
+
+
+/////////////////////////////////////////////
+// Changes the page from one to another
+/////////////////////////////////////////////
+
+/*
 NOTE:
 - assumes the current page is the Add Allergy Page.
 */
-function  fromAddAllergyToAddReaction(){
+function  NKDAFromAddAllergyToAddReaction(){
 	let defaultNKDAButton = document.evaluate("//form[@name='RxSearchAllergyForm']/table[1]/tbody/tr[3]/td/input[4]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
 	defaultNKDAButton.click();
+}
+
+function penFromAddAllergyToAddReaction(){
+	let defaultPenicillinButton = document.evaluate("//form[@name='RxSearchAllergyForm']/table[1]/tbody/tr[3]/td/input[5]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+	defaultPenicillinButton.click();
+}
+
+function sulfaFromAddAllergyToAddReaction(){
+	let defaultSulfaButton = document.evaluate("//form[@name='RxSearchAllergyForm']/table[1]/tbody/tr[3]/td/input[6]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+	defaultSulfaButton.click();	
 }
 
 /*
@@ -120,32 +161,6 @@ function fromAddReactiontoAddAllergy(){
 	
 }
 
-/* 
-- add a NKDA button that automatically
-*/ 
-function addButtonNKDA_FromMedPage(){
-	let activeAllergies = document.evaluate("//div[@class='PropSheetMenu']/p[1]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
-	
-	console.log(activeAllergies);
-	let targetDiv = activeAllergies;
-
-	var inputButton = document.createElement('input');
-	inputButton.id = 'autoNKDAButton';
-	inputButton.type = 'button';
-	inputButton.value = 'Auto NKDA';
-	targetDiv.before(inputButton);	
-	addButtonNKDAListener_FromMedPage(inputButton);
-}
-
-function addButtonNKDAListener_FromMedPage(inputButton){
-	
-	var theButton = document.getElementById('autoNKDAButton');
-	theButton.addEventListener('click', function () { 
-  		fromMedsToAddAllergy();
-  		GM.setValue('nextPage', 'toAddReactionThenAddAllergyThenMedsThenStop');
-  	},true);
-}
-
 /*
 note:
 - assumes current page is Medications
@@ -154,6 +169,94 @@ function fromMedsToAddAllergy(){
 	let addAllergyButton = document.evaluate("//div[@class='PropSheetMenu']/p[1]/a",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
 	addAllergyButton.click();
 }
+
+
+/////////////////////////////////////////////
+// Keydown listener
+/////////////////////////////////////////////
+
+/*
+- keyboard shortcuts on the Medications page.
+*/
+function medPageKeydownListener(){
+	window.addEventListener('keydown', function (theEvent){
+		const theKey = theEvent.key;
+		const theAltKey = theEvent.altKey;
+		switch(true){
+			case theAltKey && theKey == 'z':
+				document.getElementById('autoNKDAButton').click();
+				break;
+		}
+	}, true);
+}
+
+
+
+/////////////////////////////////////////////
+// Add button on Medication Page
+/////////////////////////////////////////////
+
+/* 
+- add a NKDA button that automatically clicks through and ends up back in Meds.
+*/ 
+function addButtonNKDA_FromMedPage(){
+	let activeAllergies = document.evaluate("//div[@class='PropSheetMenu']/p[1]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+	let targetDiv = activeAllergies;
+
+	targetDiv.insertAdjacentHTML('beforebegin',	'<input id="autoNKDAButton" type="button" value="Set NKDA" title = "Automatically clicks through the pages and adds NKDA to the allergy list" style="background-color: red; font-size:14px"><br/>');
+
+	// var inputButton = document.createElement('input');
+	// inputButton.id = 'autoNKDAButton';
+	// inputButton.type = 'button';
+	// inputButton.value = 'Auto NKDA';
+	// inputButton.style.backgroundColor = 'red';
+	// targetDiv.before(inputButton);	
+	addButtonNKDAListener_FromMedPage();
+}
+
+function addButtonNKDAListener_FromMedPage(){
+	var theButton = document.getElementById('autoNKDAButton');
+	theButton.addEventListener('click', function () { 
+  		fromMedsToAddAllergy();
+  		GM.setValue('nextPage', 'toAddReactionThenAddAllergyThenMedsThenStop');
+  	},true);
+}
+
+function addPenicillinButton_FromMedPage(){
+	let activeAllergies = document.evaluate("//div[@class='PropSheetMenu']/p[1]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+	let targetDiv = activeAllergies;
+
+	targetDiv.insertAdjacentHTML('beforebegin',	'<input id="addPenicillinButton" type="button" value="Add Penicillin Allergy" style="background-color: red; font-size:14px"><br/>');
+	addPenicillinButtonListener_FromMedPage();
+}
+
+function addPenicillinButtonListener_FromMedPage(){
+	var theButton = document.getElementById('addPenicillinButton');
+	theButton.addEventListener('click', function () { 
+  		fromMedsToAddAllergy();
+  		GM.setValue('nextPage', 'PENtoAddReaction');
+  	},true);
+}
+
+function addSulfaButton_FromMedPage(){
+	let activeAllergies = document.evaluate("//div[@class='PropSheetMenu']/p[1]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+	let targetDiv = activeAllergies;
+
+	targetDiv.insertAdjacentHTML('beforebegin',	'<input id="addSulfaButton" type="button" value="Add Sulfa Allergy" style="background-color: red; font-size:14px"><br/>');
+	addSulfaButtonListener_FromMedPage();
+}
+
+function addSulfaButtonListener_FromMedPage(){
+	var theButton = document.getElementById('addSulfaButton');
+	theButton.addEventListener('click', function () { 
+  		fromMedsToAddAllergy();
+  		GM.setValue('nextPage', 'SULFAtoAddReaction');
+  	},true);
+}
+
+/////////////////////////////////////////////
+// Add button on Add Allergy page Page
+/////////////////////////////////////////////
 
 
 /* 
@@ -165,11 +268,14 @@ function addButtonNKDA_FromAddAllergy(){
 	console.log(activeAllergies);
 	let targetDiv = activeAllergies;
 
-	var inputButton = document.createElement('input');
-	inputButton.id = 'autoNKDAButton';
-	inputButton.type = 'button';
-	inputButton.value = 'Auto NKDA';
-	targetDiv.before(inputButton);	
+	targetDiv.insertAdjacentHTML('beforebegin',	'<input id="autoNKDAButton" type="button" value="Set NKDA" title = "Automatically clicks through the pages and adds NKDA to the allergy list" style="background-color: red; font-size:14px"><br/>');
+
+	// var inputButton = document.createElement('input');
+	// inputButton.id = 'autoNKDAButton';
+	// inputButton.type = 'button';
+	// inputButton.value = 'Auto NKDA';
+	// inputButton.style.backgroundColor = 'red';
+	// targetDiv.before(inputButton);	
 	addButtonNKDAListener_FromAddAllergy();
 }
 
@@ -177,11 +283,66 @@ function addButtonNKDA_FromAddAllergy(){
 function addButtonNKDAListener_FromAddAllergy(){
 	var theButton = document.getElementById('autoNKDAButton');
 	theButton.addEventListener('click', function () { 
-		fromAddAllergyToAddReaction();
+		NKDAFromAddAllergyToAddReaction();
   		GM.setValue('nextPage', 'toAddAllergyThenMedsThenStop');
   	},true);
 }
 
+function addPenicillinButton_FromAddAllergy(){
+	let activeAllergies = document.evaluate("//div[@class='PropSheetMenu']/p[1]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+	let targetDiv = activeAllergies;
+
+	targetDiv.insertAdjacentHTML('beforebegin',	'<input id="addPenicillinButton" type="button" value="Add Penicillin Allergy" style="background-color: red; font-size:14px"><br/>');
+	addPenicillinButtonListener_FromAddAllergy();
+}
+
+function addPenicillinButtonListener_FromAddAllergy(){
+	var theButton = document.getElementById('addPenicillinButton');
+	theButton.addEventListener('click', function () { 
+		penFromAddAllergyToAddReaction();
+  	},true);
+}
+
+function addSulfaButton_FromAddAllergy(){
+	let activeAllergies = document.evaluate("//div[@class='PropSheetMenu']/p[1]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+	let targetDiv = activeAllergies;
+
+	targetDiv.insertAdjacentHTML('beforebegin',	'<input id="addSulfaButton" type="button" value="Add Sulfa Allergy" style="background-color: red; font-size:14px"><br/>');
+	addSulfaButtonListener_FromAddAllergy();
+}
+
+function addSulfaButtonListener_FromAddAllergy(){
+	var theButton = document.getElementById('addSulfaButton');
+	theButton.addEventListener('click', function () { 
+  		sulfaFromAddAllergyToAddReaction();
+  	},true);
+}
+
+
+
+
+/////////////////////////////////////////////
+// Add button on Add Reaction page Page
+/////////////////////////////////////////////
+
+
+/*
+- assumes current page is AddReaction.
+*/
+function addButtonAddAllergyThenToMeds_FromAddReaction(){
+	let targetDiv = document.evaluate("//form[@name='RxAddAllergyForm']/table[1]/tbody/tr[9]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+	targetDiv.insertAdjacentHTML('beforeend',	'<input id="addAllergyThenToMeds" type="button" value="Add Allergy Then To Medications" style="background-color: red; font-size:14px">');
+	buttonListenerAddAllergyThenToMeds_FromAddReaction();
+
+}
+
+function buttonListenerAddAllergyThenToMeds_FromAddReaction(){
+	var theButton = document.getElementById('addAllergyThenToMeds');
+	theButton.addEventListener('click', function () { 
+  		fromAddReactiontoAddAllergy();  		
+  		GM.setValue('nextPage', 'toMedsThenStop');
+  	},true);
+}
 
 
 //////////////////////////////////////////////////////////////////////////////////////
