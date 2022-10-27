@@ -8,24 +8,25 @@
 // ==/UserScript==
 
 
+/////////////////////////////////////////////////////
+// Buttons, Event Listeners
+/////////////////////////////////////////////////////
+
+document.addEventListener("visibilitychange", function(e){
+	updateEFormSidebar();
+}, false);
 
 window.addEventListener("load", function(e) {
 	
 	addButtonLoadPostedEForm();
-	addBlock();
+	addPostedEFormsBlock();
+	updateEFormSidebar();
 }, false);
 
 
  // wrap in block level element so button is next line.
 function addButtonLoadPostedEForm(){
-	// let targetDiv = document.getElementById('buttonBlock1');
-	// if (targetDiv == null){
-		
-	// }
-
-
 	let targetDiv = document.getElementById('leftNavBar');
-
 	
 	var inputButton = document.createElement('input');
 	inputButton.id = 'loadPostedEForm';
@@ -41,7 +42,7 @@ function addButtonEFormListener(){
 }
 
 
-function addBlock(){
+function addPostedEFormsBlock(){
 	var targetDiv = document.getElementById('eformslist');
 	var theBlock = document.createElement('div');
 	theBlock.id = "postedEFormsBlock";
@@ -49,6 +50,9 @@ function addBlock(){
 	targetDiv.prepend(theBlock);
 }
 
+/////////////////////////////////////////////////////
+// Update eForm Sidebar
+/////////////////////////////////////////////////////
 
 /*
 NOTE
@@ -68,17 +72,29 @@ function updateEFormSidebar() {
             const prevVersionHTML = new DOMParser().parseFromString(prevVersionXMLText, "text/html");
             const postedEFormsNodeList = prevVersionHTML.querySelectorAll(".elements > tbody:nth-child(1) > tr"); 
             const postedTodayEFormsList = findEFormsPostedToday(postedEFormsNodeList);
-            // console.log(postedTodayEFormsList);
+
+            removeEChartEFormsPostedToday();
+            
+// :contains(text)
 
             $("#postedEFormsBlock").html("");
 			$("#postedEFormsBlock").append(eFormsObjectListToHTML(postedTodayEFormsList));
-			// $("#eformslist").prepend(eFormsObjectListToHTML(postedTodayEFormsList));
-			// $("#leftNavBar").append(eFormsObjectListToHTML(postedTodayEFormsList));
 
         }
     };
 	xmlhttp.open("GET", urlAddedEForms(), true);
 	xmlhttp.send();
+}
+
+function removeEChartEFormsPostedToday(){
+	const eChartPostedTodayEFormsNodeList = $("#eformslist > li > span > a:contains('" + todayDateDDMMMYYYY() + "')");
+
+	for (i = 0; i < eChartPostedTodayEFormsNodeList.length; i++){
+		eFormPostedTodayInEChart = eChartPostedTodayEFormsNodeList[i].parentNode.parentNode;
+		// console.log(eFormPostedTodayInEChart);
+		eFormPostedTodayInEChart.remove();
+	}
+    // console.log(eChartPostedTodayEFormsNodeList);
 }
 
 /*
@@ -97,12 +113,12 @@ function eFormsObjectListToHTML(eFormsObjectList){
 		`<li style="overflow: hidden; clear:both; position:relative; display:block; white-space:nowrap; ">
 			<a border="0" style="text-decoration:none; width:7px; z-index: 100; background-color: white; position:relative; margin: 0px; padding-bottom: 0px;  vertical-align: bottom; display: inline; float: right; clear:both;"><img id="imgeformsZ`+ i + `" src="/oscar/images/clear.gif">&nbsp;&nbsp;</a>
 			<span style=" z-index: 1; position:absolute; margin-right:10px; width:90%; overflow:hidden;  height:1.5em; white-space:nowrap; float:left; text-align:left; ">
-			<a class="links" style="" onmouseover="this.className='linkhover'" onmouseout="this.className='links'" href="#" onclick = "window.open('`+ eFormObject.URL + `', '_blank', 'height=700,width=800,scrollbars=yes,status=yes');return false;" title="` + eFormObject.eFormTitle + `, ">` + 
-			eFormObject.eFormTitle + eFormObject.addedInfo + `, 
-			</a>
+			<a class="links" style="" onmouseover="this.className='linkhover'" onmouseout="this.className='links'" href="#" onclick = "window.open('` + eFormObject.URL + `', '_blank', 'height=700,width=800,scrollbars=yes,status=yes');return false;" title="` + eFormObject.addedInfo + `">` + 
+			eFormObject.eFormTitle + ': ' + eFormObject.addedInfo + 
+			`</a>
 			</span>
 			<span style="z-index: 100; background-color: white; overflow:hidden;   position:relative; height:1.5em; white-space:nowrap; float:right; text-align:right;">
-			...<a class="links" style="margin-right: 2px;" onmouseover="this.className='linkhover'" onmouseout="this.className='links'" href="#" onclick = "window.open('`+ eFormObject.URL + `', '_blank', 'height=700,width=800,scrollbars=yes,status=yes');return false;" title="` + eFormObject.eFormTitle + `, ">` 
+			...<a class="links" style="margin-right: 2px;" onmouseover="this.className='linkhover'" onmouseout="this.className='links'" href="#" onclick = "window.open('`+ eFormObject.URL + `', '_blank', 'height=700,width=800,scrollbars=yes,status=yes');return false;" title="` + eFormObject.addedInfo + `">` 
 			+ eFormObject.date + `			
 			</a>
 			</span>
@@ -149,6 +165,10 @@ function findEFormsPostedToday(postedEFormsNodeList){
 	return postedEFormsObjectList;
 }
 
+/////////////////////////////////////////////////////
+// Date
+/////////////////////////////////////////////////////
+
 function isToday(eFormFullDate){
 	const splitEFormFullDate = eFormFullDate.split('-');
 	const eFormYear = splitEFormFullDate[0];
@@ -164,7 +184,21 @@ function isToday(eFormFullDate){
 	return eFormDate == todayDate && eFormMonth == todayMonth && eFormYear == todayYear;
 }
 
+function todayDateDDMMMYYYY(){
+	const month = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+	const today = new Date();
+	const todayDate = today.getDate();
+	const todayMonth = month[today.getMonth()];
+	const todayYear = today.getFullYear();
 
+	const todayFullDate = todayDate + '-' + todayMonth + '-' + todayYear;
+	return todayFullDate;
+}
+	
+
+/////////////////////////////////////////////////////
+// get URL, URL elements
+/////////////////////////////////////////////////////
 
 /*
 PURPOSE
