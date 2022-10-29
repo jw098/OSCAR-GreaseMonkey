@@ -12,14 +12,20 @@
 // Buttons, Event Listeners
 /////////////////////////////////////////////////////
 
-document.addEventListener("visibilitychange", function(e){
-	updateEFormSidebar();
+// document.addEventListener("visibilitychange", function(e){
+// 	updateEFormSidebar();
+// }, false);
+
+window.addEventListener("focus", function(event) 
+{ 
+  updateEFormSidebar();
+  // console.log("window has focus ");
 }, false);
 
 window.addEventListener("load", function(e) {
 	
 	addButtonLoadPostedEForm();
-	addPostedEFormsBlock();
+	// addPostedEFormsBlock();
 	updateEFormSidebar();
 }, false);
 
@@ -43,11 +49,16 @@ function addButtonEFormListener(){
 
 
 function addPostedEFormsBlock(){
+	// if the postedItemsBlock exists, don't create another one.
+	if (!!document.getElementById('postedEFormsBlock')){  
+		return;
+	}
+
 	var targetDiv = document.getElementById('eformslist');
 	var theBlock = document.createElement('div');
 	theBlock.id = "postedEFormsBlock";
-	theBlock.class = 'leftBox';
-	targetDiv.prepend(theBlock);
+	theBlock.className = 'links';
+	targetDiv.before(theBlock);
 }
 
 /////////////////////////////////////////////////////
@@ -73,8 +84,8 @@ function updateEFormSidebar() {
             const postedItemsNodeList = otherPageHTML.querySelectorAll(".elements > tbody:nth-child(1) > tr"); 
             const postedItemsTodayList = findEFormsPostedToday(postedItemsNodeList);
 
-            removeEChartEFormsPostedToday();
-            
+            // removeEChartEFormsPostedToday();
+            addPostedEFormsBlock();
             // console.log(postedItemsTodayList);
             $("#postedEFormsBlock").html("");
 			$("#postedEFormsBlock").append(eFormsObjectListToHTML(postedItemsTodayList));
@@ -108,16 +119,15 @@ function eFormsObjectListToHTML(eFormsObjectList){
 		// console.log(eFormObject);
 
 		htmlResult += 
-
 		`<li style="overflow: hidden; clear:both; position:relative; display:block; white-space:nowrap; ">
 			<a border="0" style="text-decoration:none; width:7px; z-index: 100; background-color: white; position:relative; margin: 0px; padding-bottom: 0px;  vertical-align: bottom; display: inline; float: right; clear:both;"><img id="imgeformsZ`+ i + `" src="/oscar/images/clear.gif">&nbsp;&nbsp;</a>
 			<span style=" z-index: 1; position:absolute; margin-right:10px; width:90%; overflow:hidden;  height:1.5em; white-space:nowrap; float:left; text-align:left; ">
-			<a class="links" style="" onmouseover="this.className='linkhover'" onmouseout="this.className='links'" href="#" onclick = "window.open('` + eFormObject.URL + `', '_blank', 'height=700,width=800,scrollbars=yes,status=yes');return false;" title="` + eFormObject.addedInfo + `">` + 
+			<a class="links" style="" onmouseover="this.className='linkhover'" onmouseout="this.className='links'" href="#" onclick = "window.open('` + eFormObject.URL + `', '_blank', 'scrollbars=yes,status=yes');return false;" title="` + eFormObject.addedInfo + `">` + 
 			eFormObject.eFormTitle + ': ' + eFormObject.addedInfo + 
 			`</a>
 			</span>
 			<span style="z-index: 100; background-color: white; overflow:hidden;   position:relative; height:1.5em; white-space:nowrap; float:right; text-align:right;">
-			...<a class="links" style="margin-right: 2px;" onmouseover="this.className='linkhover'" onmouseout="this.className='links'" href="#" onclick = "window.open('`+ eFormObject.URL + `', '_blank', 'height=700,width=800,scrollbars=yes,status=yes');return false;" title="` + eFormObject.addedInfo + `">` 
+			...<a class="links" style="margin-right: 2px;" onmouseover="this.className='linkhover'" onmouseout="this.className='links'" href="#" onclick = "window.open('`+ eFormObject.URL + `', '_blank', 'scrollbars=yes,status=yes');return false;" title="` + eFormObject.addedInfo + `">` 
 			+ eFormObject.date + `			
 			</a>
 			</span>
@@ -132,24 +142,37 @@ function eFormsObjectListToHTML(eFormsObjectList){
 PURPOSE:
 - takes the node list and outputs objects describing each eForm, with URL, title, Additional Info, and date.
 - only outputs objects with eforms that match today's date.
+NOTE:
+- avoid posting items already posted in eChart. If item from other page matches FDID of first element in eChart, then stop. Assumes that eForms are sorted by date.
 */
 function findEFormsPostedToday(postedEFormsNodeList){
 	//console.log(postedEFormsNodeList);
+	const firstEChartEFormFDID = getFirstEChartEFormFDID();
 	let postedEFormsObjectList = [];
 	for (let i=1; i < postedEFormsNodeList.length; i++){
 		currentNode = postedEFormsNodeList[i];
 		nodeChildren = currentNode.children;
 		// console.log(nodeChildren);
 		nodeURLOuterHTML = nodeChildren[0].children[0].outerHTML;
+		nodeFDID = nodeURLOuterHTML.split("fdid=")[1].split("&")[0];
+		// console.log(nodeURLOuterHTML);
+		// console.log(nodeFDID);
+		nodeDate = nodeChildren[2].textContent;
+
+		/*
+		- stops when the eForm date doesn't match today's date. assumes dates are sorted.
+		- also stops if eForm from other page matches FDID of first eForm in eChart.
+		*/
+		if (!isToday(nodeDate) || firstEChartEFormFDID == nodeFDID){
+			break;
+		}
+
 		nodeURL = getURLOrigin() + 'eform/'+ nodeURLOuterHTML.split("\'")[1];
 		nodeEFormTitle = nodeChildren[0].children[0].textContent;
 		nodeAddedInfo = nodeChildren[1].textContent;
-		nodeDate = nodeChildren[2].textContent;
+		
 
-		// stops when the eForm date doesn't match today's date. assumes dates are sorted.
-		if (!isToday(nodeDate)){
-			break;
-		}
+
 		const postedEFormObject = {
 			URL: nodeURL,
 			eFormTitle: nodeEFormTitle,
@@ -163,6 +186,14 @@ function findEFormsPostedToday(postedEFormsNodeList){
 	}
 	return postedEFormsObjectList;
 }
+
+function getFirstEChartEFormFDID(){
+	const firstEChartEForm = $("#eformslist > li:first-of-type > span:nth-child(2) > a:nth-child(1)"); 
+	// console.log(firstEChartEForm[0].outerHTML);
+	const FDID = firstEChartEForm[0].outerHTML.split("fdid=")[1].split("&")[0];
+	return FDID;
+}
+
 
 /////////////////////////////////////////////////////
 // Update Consultations Sidebar
@@ -187,7 +218,7 @@ function updateConsultationsSidebar() {
             const postedItemsNodeList = otherPageHTML.querySelectorAll(".MainTableRightColumn > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(2) > td:nth-child(1) > table:nth-child(1) > tbody:nth-child(1) > tr"); 
             console.log('hi');
             const postedItemsTodayList = findConsultsPostedToday(postedItemsNodeList);
-console.log('hi');
+		console.log('hi');
             removeEChartConsultsPostedToday();
             
             $("#postedEFormsBlock").html("");
