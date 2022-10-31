@@ -12,10 +12,10 @@
 // Buttons, Event Listeners
 /////////////////////////////////////////////////////
 
-
 window.addEventListener("focus", function(event) { 
   setTimeout(updateEFormSidebar(), 1000);
   setTimeout(updateConsultationsSidebar(), 1000);
+  setTimeout(updateMedicationsSidebar(), 1000);
   // console.log("window has focus ");
 }, false);
 
@@ -67,6 +67,19 @@ function addPostedConsultsBlock(){
 	
 	var theBlock = document.createElement('div');
 	theBlock.id = "postedConsultsBlock";
+	theBlock.className = 'links';
+	targetDiv.before(theBlock);
+}
+
+function addPostedMedsBlock(){
+	// if the postedItemsBlock exists, don't create another one.
+	if (!!document.getElementById('postedMedsBlock')){  
+		return;
+	}
+	var targetDiv = document.getElementById('Rxlist');
+	
+	var theBlock = document.createElement('div');
+	theBlock.id = "postedMedsBlock";
 	theBlock.className = 'links';
 	targetDiv.before(theBlock);
 }
@@ -215,7 +228,7 @@ NOTE
 - for forms posted today that are already listed in the sidebar, my version override it and will be posted instead.
 */
 function updateConsultationsSidebar() {
-	console.log('---consults---');
+	// console.log('---consults---');
     let xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
@@ -227,7 +240,7 @@ function updateConsultationsSidebar() {
             const otherPageHTML = new DOMParser().parseFromString(otherPageXMLText, "text/html");
             const postedItemsNodeList = otherPageHTML.querySelectorAll(".MainTableRightColumn > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(2) > td:nth-child(1) > table:nth-child(1) > tbody:nth-child(1) > tr"); 
             const postedItemsTodayList = findConsultsPostedToday(postedItemsNodeList);
-            console.log(postedItemsTodayList);
+            // console.log(postedItemsTodayList);
             // removeEChartConsultsPostedToday();
             addPostedConsultsBlock();
             
@@ -267,7 +280,7 @@ function consultsObjectListToHTML(itemsObjectList){
 		htmlResult += 
 
 		`<li style="overflow: hidden; clear:both; position:relative; display:block; white-space:nowrap; ">
-			<a border="0" style="text-decoration:none; width:7px; z-index: 100; background-color: white; position:relative; margin: 0px; padding-bottom: 0px;  vertical-align: bottom; display: inline; float: right; clear:both;"><img id="imgeformsZ`+ i + `" src="/oscar/images/clear.gif">&nbsp;&nbsp;</a>
+			<a border="0" style="text-decoration:none; width:7px; z-index: 100; background-color: white; position:relative; margin: 0px; padding-bottom: 0px;  vertical-align: bottom; display: inline; float: right; clear:both;"><img id="imgconsultationZ`+ i + `" src="/oscar/images/clear.gif">&nbsp;&nbsp;</a>
 			<span style=" z-index: 1; position:absolute; margin-right:10px; width:90%; overflow:hidden;  height:1.5em; white-space:nowrap; float:left; text-align:left; ">
 			<a class="links" style="" onmouseover="this.className='linkhover'" onmouseout="this.className='links'" href="#" onclick = "window.open('` + itemObject.URL + `', '_blank', 'height=700,width=800,scrollbars=yes,status=yes');return false;" title="` + itemObject.itemTitle + " " +itemObject.date + '&#10;Requesting Physician: Dr. ' + itemObject.requestingDoc + `">` + 
 			itemObject.itemTitle + 
@@ -374,7 +387,7 @@ function updateConsultationsSidebarAsync() {
             if (!otherPageXMLText) { 
                 return;
             }
-
+            
             const otherPageHTML = new DOMParser().parseFromString(otherPageXMLText, "text/html");
             const postedItemsNodeList = otherPageHTML.querySelectorAll(".MainTableRightColumn > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(2) > td:nth-child(1) > table:nth-child(1) > tbody:nth-child(1) > tr"); 
             
@@ -405,7 +418,7 @@ function consultsObjectListToHTMLAsync(itemsObjectList){
         htmlResult += 
 
         `<li style="overflow: hidden; clear:both; position:relative; display:block; white-space:nowrap; ">
-            <a border="0" style="text-decoration:none; width:7px; z-index: 100; background-color: white; position:relative; margin: 0px; padding-bottom: 0px;  vertical-align: bottom; display: inline; float: right; clear:both;"><img id="imgeformsZ`+ i + `" src="/oscar/images/clear.gif">&nbsp;&nbsp;</a>
+            <a border="0" style="text-decoration:none; width:7px; z-index: 100; background-color: white; position:relative; margin: 0px; padding-bottom: 0px;  vertical-align: bottom; display: inline; float: right; clear:both;"><img id="imgconsultationZ`+ i + `" src="/oscar/images/clear.gif">&nbsp;&nbsp;</a>
             <span style=" z-index: 1; position:absolute; margin-right:10px; width:90%; overflow:hidden;  height:1.5em; white-space:nowrap; float:left; text-align:left; ">
             <a class="links" style="" onmouseover="this.className='linkhover'" onmouseout="this.className='links'" href="#" onclick = "window.open('` + itemObject.URL + `', '_blank', 'height=700,width=800,scrollbars=yes,status=yes');return false;" title="` + itemObject.itemTitle + " " +itemObject.date + '&#10;Requesting Physician: Dr. ' + itemObject.requestingDoc + '&#10;Consultant Physician: Dr. ' + itemObject.consultantDoc + `">` + 
             itemObject.itemTitle + 
@@ -513,7 +526,7 @@ function getXMLHTTP(consultItemURL){
 			if (xmlhttp.status == 200) {
 		        resolve(xmlhttp.responseText);
 		      } else {
-		        resolve("File not Found");
+		        reject("File not Found");
 		      }
 		};
 		xmlhttp.send();
@@ -540,11 +553,15 @@ function getConsultantDoctor(xhrText){
 /////////////////////////////////////////////////////
 // Update Medications Sidebar
 /////////////////////////////////////////////////////
-updateMedicationsSidebar();
+// updateMedicationsSidebar();
 /*
 NOTE
 - adds the forms that were posted today to the sidebar.
 - for forms posted today that are already listed in the sidebar, my version override it and will be posted instead.
+
+Side note
+- prescriptions with days to expire 30 or greater will be considered a current Drug and colored blue.
+- if days to expire is 29 or less, its class will be expireInReference, and colored
 */
 function updateMedicationsSidebar() {
 	console.log("----meds---");
@@ -555,15 +572,16 @@ function updateMedicationsSidebar() {
             if (!otherPageXMLText) { 
                 return;
             }
+
 // drugProfile
             const otherPageHTML = new DOMParser().parseFromString(otherPageXMLText, "text/html");
             const postedItemsNodeList = otherPageHTML.querySelectorAll("#reprint")[0].children; // > tbody:nth-child(1) > tr
             
             // console.log(postedItemsNodeList);
             const postedItemsTodayList = findMedsPostedToday(postedItemsNodeList);
-            
-            $("#postedEFormsBlock").html("");
-			$("#postedEFormsBlock").append(medsObjectListToHTML(postedItemsTodayList));
+            addPostedMedsBlock();
+            $("#postedMedsBlock").html("");
+			$("#postedMedsBlock").append(medsObjectListToHTML(postedItemsTodayList));
 
         }
     };
@@ -583,19 +601,20 @@ function medsObjectListToHTML(eFormsObjectList){
 		eFormObject = eFormsObjectList[i];
 		// console.log(eFormObject);
 
+
+// const postedItemObject = {
+// 					date: currentDate,
+// 					med: nodeText
+// 				}
+
 		htmlResult += 
 
 		`<li style="overflow: hidden; clear:both; position:relative; display:block; white-space:nowrap; ">
-			<a border="0" style="text-decoration:none; width:7px; z-index: 100; background-color: white; position:relative; margin: 0px; padding-bottom: 0px;  vertical-align: bottom; display: inline; float: right; clear:both;"><img id="imgeformsZ`+ i + `" src="/oscar/images/clear.gif">&nbsp;&nbsp;</a>
-			<span style=" z-index: 1; position:absolute; margin-right:10px; width:90%; overflow:hidden;  height:1.5em; white-space:nowrap; float:left; text-align:left; ">
-			<a class="links" style="" onmouseover="this.className='linkhover'" onmouseout="this.className='links'" href="#" onclick = "window.open('` + eFormObject.URL + `', '_blank', 'height=700,width=800,scrollbars=yes,status=yes');return false;" title="` + eFormObject.addedInfo + `">` + 
-			eFormObject.eFormTitle + ': ' + eFormObject.addedInfo + 
-			`</a>
-			</span>
-			<span style="z-index: 100; background-color: white; overflow:hidden;   position:relative; height:1.5em; white-space:nowrap; float:right; text-align:right;">
-			...<a class="links" style="margin-right: 2px;" onmouseover="this.className='linkhover'" onmouseout="this.className='links'" href="#" onclick = "window.open('`+ eFormObject.URL + `', '_blank', 'height=700,width=800,scrollbars=yes,status=yes');return false;" title="` + eFormObject.addedInfo + `">` 
-			+ eFormObject.date + `			
-			</a>
+			<a border="0" style="text-decoration:none; width:7px; z-index: 100; background-color: white; position:relative; margin: 0px; padding-bottom: 0px;  vertical-align: bottom; display: inline; float: right; clear:both;"><img id="imgRxZ`+ i + `" src="/oscar/images/clear.gif">&nbsp;&nbsp;</a>
+			<span style=" z-index: 1; position:absolute; margin-right:10px; width:90%; overflow:hidden;  height:1.2em; white-space:nowrap; float:left; text-align:left; ">
+				<a class="links" style="" onmouseover="this.className='linkhover'" onmouseout="this.className='links'" href="#" onclick = "window.open('` + urlAddedMedications() + `', '_blank', 'height=700,width=800,scrollbars=yes,status=yes');return false;" title="` + eFormObject.med + `">
+					<span class="currentDrug ">` + eFormObject.med + `</span>
+				</a>
 			</span>
 		</li>`
 	}
@@ -650,7 +669,7 @@ function findMedsPostedToday(postedItemNodeList){
 		// postedItemObjectList.push(postedItemObject);
 
 	}
-	// console.log(postedItemObjectList);
+	console.log(postedItemObjectList);
 	return postedItemObjectList;
 }
 /*
