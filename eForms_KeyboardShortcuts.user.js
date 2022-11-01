@@ -3,6 +3,7 @@
 // @namespace      oscar
 // @include        */eform/efmformslistadd.jsp*
 // @include        */eform/efmformadd_data.jsp*
+// @include        */eform/efmshowform_data.jsp*
 // @description		Within e-forms repository, Alt+A to close. Within an individual e-form: Alt+1 to Submit. Alt+2 to Print & Submit.
 // @require http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js
 // @grant	   none
@@ -18,6 +19,7 @@ const printNSubmitEForm_hotkey = 2;
 let currentURL = window.location.href;
 const eFormsPage = /eform\/efmformslistadd\.jsp/;
 const individualEForm = /eform\/efmformadd\_data\.jsp/;
+const individualEFormSubmitted = /eform\/efmshowform\_data\.jsp/;
 
 
 window.addEventListener('keydown', function(theEvent) {
@@ -38,7 +40,7 @@ window.addEventListener('keydown', function(theEvent) {
 		case eFormsPage.test(currentURL) && theAltKey && theKey == closeEFormList_hotkey:	// If on eForms page, hotkey to close window.
 			window.close();
 			break;
-		case individualEForm.test(currentURL):
+		case individualEForm.test(currentURL) || individualEFormSubmitted.test(currentURL):
 			// let theTarget;
 			switch(true){
 				case theAltKey && theKey == submitEForm_hotkey:

@@ -102,14 +102,16 @@ function updateEFormSidebar() {
             if (!otherPageXMLText) { 
                 return;
             }
-
+            
             const otherPageHTML = new DOMParser().parseFromString(otherPageXMLText, "text/html");
             const postedItemsNodeList = otherPageHTML.querySelectorAll(".elements > tbody:nth-child(1) > tr"); 
             const postedItemsTodayList = findEFormsPostedToday(postedItemsNodeList);
 
-            // removeEChartEFormsPostedToday();
+            console.log('----eforms----');
+            console.log(postedItemsTodayList);
+
             addPostedEFormsBlock();
-            // console.log(postedItemsTodayList);
+
             $("#postedEFormsBlock").html("");
 			$("#postedEFormsBlock").append(eFormsObjectListToHTML(postedItemsTodayList));
 
@@ -170,17 +172,22 @@ NOTE:
 */
 function findEFormsPostedToday(postedEFormsNodeList){
 	//console.log(postedEFormsNodeList);
+
 	const firstEChartEFormFDID = getFirstEChartEFormFDID();
 	let postedEFormsObjectList = [];
 	for (let i=1; i < postedEFormsNodeList.length; i++){
-		currentNode = postedEFormsNodeList[i];
-		nodeChildren = currentNode.children;
-		// console.log(nodeChildren);
-		nodeURLOuterHTML = nodeChildren[0].children[0].outerHTML;
+		currentTableRow = postedEFormsNodeList[i]; 
+		currentTableDataList = currentTableRow.children;
+		// console.log(currentTableDataList);
+		if (currentTableDataList[0].innerText == "No data!"){
+			break;
+		}
+
+		nodeURLOuterHTML = currentTableDataList[0].children[0].outerHTML;
 		nodeFDID = nodeURLOuterHTML.split("fdid=")[1].split("&")[0];
 		// console.log(nodeURLOuterHTML);
 		// console.log(nodeFDID);
-		nodeDate = nodeChildren[2].textContent;
+		nodeDate = currentTableDataList[2].textContent;
 
 		/*
 		- stops when the eForm date doesn't match today's date. assumes dates are sorted.
@@ -191,8 +198,8 @@ function findEFormsPostedToday(postedEFormsNodeList){
 		}
 
 		nodeURL = getURLOrigin() + 'eform/'+ nodeURLOuterHTML.split("\'")[1];
-		nodeEFormTitle = nodeChildren[0].children[0].textContent;
-		nodeAddedInfo = nodeChildren[1].textContent;
+		nodeEFormTitle = currentTableDataList[0].children[0].textContent;
+		nodeAddedInfo = currentTableDataList[1].textContent;
 		
 
 
@@ -211,10 +218,16 @@ function findEFormsPostedToday(postedEFormsNodeList){
 }
 
 function getFirstEChartEFormFDID(){
-	const firstEChartEForm = $("#eformslist > li:first-of-type > span:nth-child(2) > a:nth-child(1)"); 
-	// console.log(firstEChartEForm[0].outerHTML);
-	const FDID = firstEChartEForm[0].outerHTML.split("fdid=")[1].split("&")[0];
-	return FDID;
+	const eChartEFormList = $("#eformslist > li > span:nth-child(2) > a:nth-child(1)"); 
+	// console.log(eChartEFormList[0].outerHTML);
+	if (eChartEFormList.length == 0){
+		return null;
+	}
+	else {
+		const firstFDID = eChartEFormList[0].outerHTML.split("fdid=")[1].split("&")[0];
+		return firstFDID;	
+	}
+	
 }
 
 
@@ -228,7 +241,7 @@ NOTE
 - for forms posted today that are already listed in the sidebar, my version override it and will be posted instead.
 */
 function updateConsultationsSidebar() {
-	// console.log('---consults---');
+	
     let xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
@@ -240,8 +253,10 @@ function updateConsultationsSidebar() {
             const otherPageHTML = new DOMParser().parseFromString(otherPageXMLText, "text/html");
             const postedItemsNodeList = otherPageHTML.querySelectorAll(".MainTableRightColumn > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(2) > td:nth-child(1) > table:nth-child(1) > tbody:nth-child(1) > tr"); 
             const postedItemsTodayList = findConsultsPostedToday(postedItemsNodeList);
-            // console.log(postedItemsTodayList);
-            // removeEChartConsultsPostedToday();
+
+            console.log('---consults---');
+            console.log(postedItemsTodayList);
+
             addPostedConsultsBlock();
             
             $("#postedConsultsBlock").html("");
@@ -328,7 +343,7 @@ function findConsultsPostedToday(postedItemNodeList){
 			break;
 		}
 		/*
-		- if consult from other page matches reqID of first consult in eChart, move onto next item.		
+		- if consult from other page matches reqID of any posted consult in the eChart, move onto next item.		
 		*/
 		if (isMatchingConsultReqID(nodeReqID)){
 			continue;
@@ -564,7 +579,7 @@ Side note
 - if days to expire is 29 or less, its class will be expireInReference, and colored
 */
 function updateMedicationsSidebar() {
-	console.log("----meds---");
+	
     let xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
@@ -572,13 +587,15 @@ function updateMedicationsSidebar() {
             if (!otherPageXMLText) { 
                 return;
             }
-
+            
 // drugProfile
             const otherPageHTML = new DOMParser().parseFromString(otherPageXMLText, "text/html");
             const postedItemsNodeList = otherPageHTML.querySelectorAll("#reprint")[0].children; // > tbody:nth-child(1) > tr
-            
-            // console.log(postedItemsNodeList);
             const postedItemsTodayList = findMedsPostedToday(postedItemsNodeList);
+
+            console.log("----meds---");
+            console.log(postedItemsTodayList);
+
             addPostedMedsBlock();
             $("#postedMedsBlock").html("");
 			$("#postedMedsBlock").append(medsObjectListToHTML(postedItemsTodayList));
@@ -589,6 +606,22 @@ function updateMedicationsSidebar() {
 	xmlhttp.send();
 }
 
+
+
+/*
+echart
+ALESSE (21) 100 MCG-20 MCG TAB  take 1 tab daily for 3 months  Qty:90  Repeats:0
+BETADERM 0.1 % CREAM  3 day  Qty:50 g Repeats:0
+SYMBICORT 100 TURBUHALER  take 1-3 inh bid for 2 weeks  Qty:84  Repeats:0
+AG-PERINDOPRIL 2 MG TABLET 0 null 10 Days  10  Qty  Repeats: 0
+
+rxposted
+ALESSE (21) 100 MCG-20 MCG TAB 1 OD 3 Months  90  Qty  Repeats: 0
+BETADERM 0.1 % CREAM 0 null 3 Days  50 g Qty  Repeats: 0
+BETADERM 0.1 % CREAM 0 null 50 Days  50  Qty  Repeats: 0
+SYMBICORT 100 TURBUHALER 1-3 bid 2 Weeks  84  Qty  Repeats: 0
+AG-PERINDOPRIL 2 MG TABLET  10 days  Qty:10  Repeats:0
+*/
 
 /*
 PURPOSE:
@@ -669,7 +702,7 @@ function findMedsPostedToday(postedItemNodeList){
 		// postedItemObjectList.push(postedItemObject);
 
 	}
-	console.log(postedItemObjectList);
+	// console.log(postedItemObjectList);
 	return postedItemObjectList;
 }
 /*
