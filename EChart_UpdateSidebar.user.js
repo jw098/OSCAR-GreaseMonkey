@@ -15,6 +15,7 @@
 window.addEventListener("focus", function(event) { 
   setTimeout(updateEFormSidebar(), 1000);
   setTimeout(updateConsultationsSidebar(), 1000);
+  // setTimeout(updateMedicationsSidebar2(), 1000);
   setTimeout(updateMedicationsSidebar(), 1000);
   // console.log("window has focus ");
 }, false);
@@ -566,7 +567,7 @@ function getConsultantDoctor(xhrText){
 }
 
 /////////////////////////////////////////////////////
-// Update Medications Sidebar
+// Update Medications Sidebar2
 /////////////////////////////////////////////////////
 // updateMedicationsSidebar();
 /*
@@ -578,7 +579,7 @@ Side note
 - prescriptions with days to expire 30 or greater will be considered a current Drug and colored blue.
 - if days to expire is 29 or less, its class will be expireInReference, and colored
 */
-function updateMedicationsSidebar() {
+function updateMedicationsSidebar2() {
 	
     let xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function() {
@@ -591,9 +592,9 @@ function updateMedicationsSidebar() {
 // drugProfile
             const otherPageHTML = new DOMParser().parseFromString(otherPageXMLText, "text/html");
             const postedItemsNodeList = otherPageHTML.querySelectorAll("#reprint")[0].children; // > tbody:nth-child(1) > tr
-            const postedItemsTodayList = findMedsPostedToday(postedItemsNodeList);
+            const postedItemsTodayList = findMedsPostedToday2(postedItemsNodeList);
 
-            console.log("----meds---");
+            // console.log("----meds2---");
             console.log(postedItemsTodayList);
 
             addPostedMedsBlock();
@@ -602,66 +603,16 @@ function updateMedicationsSidebar() {
 
         }
     };
-	xmlhttp.open("GET", urlAddedMedications(), false);
+	xmlhttp.open("GET", urlAddedMedications2(), false);
 	xmlhttp.send();
 }
-
-
-
-/*
-echart
-ALESSE (21) 100 MCG-20 MCG TAB  take 1 tab daily for 3 months  Qty:90  Repeats:0
-BETADERM 0.1 % CREAM  3 day  Qty:50 g Repeats:0
-SYMBICORT 100 TURBUHALER  take 1-3 inh bid for 2 weeks  Qty:84  Repeats:0
-AG-PERINDOPRIL 2 MG TABLET 0 null 10 Days  10  Qty  Repeats: 0
-
-rxposted
-ALESSE (21) 100 MCG-20 MCG TAB 1 OD 3 Months  90  Qty  Repeats: 0
-BETADERM 0.1 % CREAM 0 null 3 Days  50 g Qty  Repeats: 0
-BETADERM 0.1 % CREAM 0 null 50 Days  50  Qty  Repeats: 0
-SYMBICORT 100 TURBUHALER 1-3 bid 2 Weeks  84  Qty  Repeats: 0
-AG-PERINDOPRIL 2 MG TABLET  10 days  Qty:10  Repeats:0
-*/
-
-/*
-PURPOSE:
-- given list of objects with properties URL, eFormTitle, addedInfo, date, produce HTML that produces links to the eForms in question.
-*/
-function medsObjectListToHTML(eFormsObjectList){
-	let htmlResult = "";
-	// eFormsObjectList.length
-	for (let i = 0; i < eFormsObjectList.length; i++){
-		eFormObject = eFormsObjectList[i];
-		// console.log(eFormObject);
-
-
-// const postedItemObject = {
-// 					date: currentDate,
-// 					med: nodeText
-// 				}
-
-		htmlResult += 
-
-		`<li style="overflow: hidden; clear:both; position:relative; display:block; white-space:nowrap; ">
-			<a border="0" style="text-decoration:none; width:7px; z-index: 100; background-color: white; position:relative; margin: 0px; padding-bottom: 0px;  vertical-align: bottom; display: inline; float: right; clear:both;"><img id="imgRxZ`+ i + `" src="/oscar/images/clear.gif">&nbsp;&nbsp;</a>
-			<span style=" z-index: 1; position:absolute; margin-right:10px; width:90%; overflow:hidden;  height:1.2em; white-space:nowrap; float:left; text-align:left; ">
-				<a class="links" style="" onmouseover="this.className='linkhover'" onmouseout="this.className='links'" href="#" onclick = "window.open('` + urlAddedMedications() + `', '_blank', 'height=700,width=800,scrollbars=yes,status=yes');return false;" title="` + eFormObject.med + `">
-					<span class="currentDrug ">` + eFormObject.med + `</span>
-				</a>
-			</span>
-		</li>`
-	}
-	// console.log(htmlResult);
-	return htmlResult;
-}
-
 
 /*
 PURPOSE:
 - takes the unordered node list and outputs objects describing each item, with Service, referral date.
 - only outputs objects with items that match today's date.
 */
-function findMedsPostedToday(postedItemNodeList){
+function findMedsPostedToday2(postedItemNodeList){
 	// console.log(postedItemNodeList);
 	let postedItemObjectList = [];
 	let currentDate = "";
@@ -705,6 +656,169 @@ function findMedsPostedToday(postedItemNodeList){
 	// console.log(postedItemObjectList);
 	return postedItemObjectList;
 }
+
+
+/////////////////////////////////////////////////////
+// Update Medications Sidebar
+/////////////////////////////////////////////////////
+// updateMedicationsSidebar();
+/*
+NOTE
+- adds the forms that were posted today to the sidebar.
+- for forms posted today that are already listed in the sidebar, my version override it and will be posted instead.
+
+Side note
+- prescriptions with days to expire 30 or greater will be considered a current Drug and colored blue.
+- if days to expire is 29 or less, its class will be expireInReference, and colored
+*/
+function updateMedicationsSidebar() {
+	/*
+	- The Print meds page doesn't have a unique URL for each patient, so I'm guessing that the server updates that page based on which patient chart is open. But the print page isn't automatically updated to the correct patient the moment you open the eChart. It seems to take 10-30s if you just stay on the eChart. But if you open the Medications page, it seems to update the print page to the correct patient right away.
+	- The below code block requests to open the Medications page. This in turn updates the print meds page to the correct patient right away.
+	*/
+	let xmlhttp2 = new XMLHttpRequest();
+	xmlhttp2.open("GET", urlAddedMedications2(), false);
+	xmlhttp2.send();
+
+    let xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+            const otherPageXMLText = xmlhttp.responseText;   
+            if (!otherPageXMLText) { 
+                return;
+            }
+            const otherPageHTML = new DOMParser().parseFromString(otherPageXMLText, "text/html");
+
+            const currentPatientName = document.querySelectorAll(".Header > a:nth-child(1)")[0].innerText.replace(/[\s]/g, "");
+            const printPagePatientName = otherPageHTML.querySelectorAll("#AutoNumber1 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(3) > td:nth-child(1)")[0].innerHTML.split('-->')[1].split('<')[0].replace(/[\n\s]/g, "");
+
+            console.log("----meds---");
+            console.log(currentPatientName);
+            console.log(printPagePatientName);
+            if(currentPatientName != printPagePatientName){
+            	console.log("Print page patient name doesn't match current patient name.");
+            	return;
+            }
+
+            const postedItemsNodeList = otherPageHTML.querySelectorAll("tr[rxdate='"+ todayDateYYYYMMDD() + "']"); 
+            // console.log(postedItemsNodeList);
+            const postedItemsTodayList = findMedsPostedToday(postedItemsNodeList);
+
+            
+            console.log(postedItemsTodayList);
+
+            addPostedMedsBlock();
+            $("#postedMedsBlock").html("");
+			$("#postedMedsBlock").append(medsObjectListToHTML(postedItemsTodayList));
+
+        }
+    };
+	xmlhttp.open("GET", urlAddedMedications(), false);
+	xmlhttp.send();
+}
+
+/*
+PURPOSE:
+- takes the node list and outputs objects describing each item, with Medication name, and date.
+- only outputs objects with items that are not duplicates of meds already posted in eChart.
+NOTE
+- assumes given a list of nodes that match today's date
+*/
+function findMedsPostedToday(postedItemNodeList){
+    let postedItemObjectList = [];
+    for (let i=0; i < postedItemNodeList.length; i++){
+        currentNode = postedItemNodeList[i];
+        nodeChildren = currentNode.children;
+
+        nodeMed = nodeChildren[2].children[0].innerText;
+
+        if (isMatchingPostedMeds(nodeMed)){
+        	continue;
+        }
+
+        const postedItemObject = {
+			date: todayDateYYYYMMDD(),
+			med: nodeMed
+		}
+        postedItemObjectList.push(postedItemObject);
+        
+    }
+    return postedItemObjectList;
+}
+
+/*
+- returns true if given printedMed matches any of the medications listed in the eChart.
+
+*/
+function isMatchingPostedMeds(printedMed){
+	const eChartMedList = $("#Rxlist > li > span:nth-child(2) > a:nth-child(1)"); 
+	// console.log(firstEChartConsultReqID[0].outerHTML);
+	for (i = 0; i < eChartMedList.length; i++){
+		printedMed = printedMed.replace(/  +/g, ' ').trim();
+		eChartMed = eChartMedList[i].innerText;
+		// console.log(printedMed);
+		// console.log(eChartMed);
+		
+		if (eChartMed == printedMed){
+			return true;
+		}
+	}
+	
+	return false;
+}
+
+
+/*
+echart
+ALESSE (21) 100 MCG-20 MCG TAB  take 1 tab daily for 3 months  Qty:90  Repeats:0
+BETADERM 0.1 % CREAM  3 day  Qty:50 g Repeats:0
+SYMBICORT 100 TURBUHALER  take 1-3 inh bid for 2 weeks  Qty:84  Repeats:0
+AG-PERINDOPRIL 2 MG TABLET 0 null 10 Days  10  Qty  Repeats: 0
+
+rxposted
+ALESSE (21) 100 MCG-20 MCG TAB 1 OD 3 Months  90  Qty  Repeats: 0
+BETADERM 0.1 % CREAM 0 null 3 Days  50 g Qty  Repeats: 0
+BETADERM 0.1 % CREAM 0 null 50 Days  50  Qty  Repeats: 0
+SYMBICORT 100 TURBUHALER 1-3 bid 2 Weeks  84  Qty  Repeats: 0
+AG-PERINDOPRIL 2 MG TABLET  10 days  Qty:10  Repeats:0
+*/
+
+/*
+PURPOSE:
+- given list of objects with properties URL, eFormTitle, addedInfo, date, produce HTML that produces links to the eForms in question.
+*/
+function medsObjectListToHTML(eFormsObjectList){
+	let htmlResult = "";
+	// eFormsObjectList.length
+	for (let i = 0; i < eFormsObjectList.length; i++){
+		eFormObject = eFormsObjectList[i];
+		// console.log(eFormObject);
+
+
+// const postedItemObject = {
+// 					date: currentDate,
+// 					med: nodeText
+// 				}
+
+		htmlResult += 
+
+		`<li style="overflow: hidden; clear:both; position:relative; display:block; white-space:nowrap; ">
+			<a border="0" style="text-decoration:none; width:7px; z-index: 100; background-color: white; position:relative; margin: 0px; padding-bottom: 0px;  vertical-align: bottom; display: inline; float: right; clear:both;"><img id="imgRxZ`+ i + `" src="/oscar/images/clear.gif">&nbsp;&nbsp;</a>
+			<span style=" z-index: 1; position:absolute; margin-right:10px; width:90%; overflow:hidden;  height:1.2em; white-space:nowrap; float:left; text-align:left; ">
+				<a class="links" style="" onmouseover="this.className='linkhover'" onmouseout="this.className='links'" href="#" onclick = "window.open('` + urlAddedMedications2() + `', '_blank', 'height=700,width=800,scrollbars=yes,status=yes');return false;" title="` + eFormObject.med + `">
+					<span class="currentDrug ">` + eFormObject.med + `</span>
+				</a>
+			</span>
+		</li>`
+	}
+	// console.log(htmlResult);
+	return htmlResult;
+}
+
+
+
+
+
 /*
 - returns true if the given selectMed is already within medListSoFar.
 - medListSoFar is an objects with properties date, med.
@@ -754,6 +868,18 @@ function todayDateDDMMMYYYY(){
 	const todayFullDate = todayDate + '-' + todayMonth + '-' + todayYear;
 	return todayFullDate;
 }
+
+function todayDateYYYYMMDD(){
+	const month = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+	const today = new Date();
+	const todayDate = today.getDate();
+	const todayMonth = today.getMonth()+1;
+	const todayYear = today.getFullYear();
+
+	const todayFullDate = new Date().toLocaleDateString('en-CA');
+	// console.log(todayFullDate);
+	return todayFullDate;
+}
 	
 
 
@@ -777,8 +903,14 @@ function urlAddedConsults(){
 	return newURL;
 }
 
-function urlAddedMedications(){
+function urlAddedMedications2(){
 	var newURL = getURLOrigin() + "oscarRx/choosePatient.do?providerNo=null&demographicNo="+ getDemographicNum() + "&autoSaveOpenerOnOpen=true";
+
+	return newURL;
+}
+
+function urlAddedMedications(){
+	var newURL = getURLOrigin() + "/oscarRx/PrintDrugProfile2.jsp?";
 
 	return newURL;
 }
