@@ -2,7 +2,7 @@
 // @name           EChart_UpdateSidebar
 // @namespace      oscar
 // @include        */casemgmt/forward.jsp?action=view&*
-// @description		Within the E-chart: Update the sidebar with newly created eForms when posted.
+// @description		Within the E-chart: Update the sidebar with newly created eForms, Consults, Ticklers, Medications when posted.
 // @require   https://ajax.googleapis.com/ajax/libs/jquery/1.3.1/jquery.min.js
 // @grant	   none
 // ==/UserScript==
@@ -15,13 +15,12 @@
 window.addEventListener("focus", function(event) { 
   setTimeout(updateEFormSidebar(), 1000);
   setTimeout(updateConsultationsSidebar(), 1000);
-  // setTimeout(updateMedicationsSidebar2(), 1000);
   setTimeout(updateMedicationsSidebar(), 1000);
+  setTimeout(updateTicklerSidebar(), 1000);
   // console.log("window has focus ");
 }, false);
 
 window.addEventListener("load", function(e) {
-	
 	addButtonLoadPostedEForm();
 	// addPostedEFormsBlock();
 	// updateEFormSidebar();
@@ -83,6 +82,20 @@ function addPostedMedsBlock(){
 	theBlock.id = "postedMedsBlock";
 	theBlock.className = 'links';
 	targetDiv.before(theBlock);
+}
+
+function addPostedTicklersBlock(){
+
+	// if the postedItemsBlock exists, don't create another one.
+	if (!!document.getElementById('postedTicklersBlock')){  
+		return;
+	}
+	var targetDiv = document.getElementById('ticklerlist');
+	var theBlock = document.createElement('div');
+	theBlock.id = "postedTicklersBlock";
+	theBlock.className = 'links';
+	targetDiv.before(theBlock);
+
 }
 
 /////////////////////////////////////////////////////
@@ -603,7 +616,7 @@ function updateMedicationsSidebar2() {
 
         }
     };
-	xmlhttp.open("GET", urlAddedMedications2(), false);
+	xmlhttp.open("GET", urlAddedMedications(), false);
 	xmlhttp.send();
 }
 
@@ -658,6 +671,23 @@ function findMedsPostedToday2(postedItemNodeList){
 }
 
 
+
+
+/*
+- returns true if the given selectMed is already within medListSoFar.
+- medListSoFar is an objects with properties date, med.
+*/
+function isDuplicateMed(selectMed, medListSoFar){
+	for (i = 0; i < medListSoFar.length; i++){
+		const oneMed = medListSoFar[i].med;
+		if (oneMed == selectMed){
+			return true;
+		}
+	}
+	return false;
+}
+
+
 /////////////////////////////////////////////////////
 // Update Medications Sidebar
 /////////////////////////////////////////////////////
@@ -677,7 +707,7 @@ function updateMedicationsSidebar() {
 	- The below code block requests to open the Medications page. This in turn updates the print meds page to the correct patient right away.
 	*/
 	let xmlhttp2 = new XMLHttpRequest();
-	xmlhttp2.open("GET", urlAddedMedications2(), false);
+	xmlhttp2.open("GET", urlAddedMedications(), false);
 	xmlhttp2.send();
 
     let xmlhttp = new XMLHttpRequest();
@@ -713,7 +743,7 @@ function updateMedicationsSidebar() {
 
         }
     };
-	xmlhttp.open("GET", urlAddedMedications(), false);
+	xmlhttp.open("GET", urlPrintedMedications(), false);
 	xmlhttp.send();
 }
 
@@ -769,21 +799,6 @@ function isMatchingPostedMeds(printedMed){
 
 
 /*
-echart
-ALESSE (21) 100 MCG-20 MCG TAB  take 1 tab daily for 3 months  Qty:90  Repeats:0
-BETADERM 0.1 % CREAM  3 day  Qty:50 g Repeats:0
-SYMBICORT 100 TURBUHALER  take 1-3 inh bid for 2 weeks  Qty:84  Repeats:0
-AG-PERINDOPRIL 2 MG TABLET 0 null 10 Days  10  Qty  Repeats: 0
-
-rxposted
-ALESSE (21) 100 MCG-20 MCG TAB 1 OD 3 Months  90  Qty  Repeats: 0
-BETADERM 0.1 % CREAM 0 null 3 Days  50 g Qty  Repeats: 0
-BETADERM 0.1 % CREAM 0 null 50 Days  50  Qty  Repeats: 0
-SYMBICORT 100 TURBUHALER 1-3 bid 2 Weeks  84  Qty  Repeats: 0
-AG-PERINDOPRIL 2 MG TABLET  10 days  Qty:10  Repeats:0
-*/
-
-/*
 PURPOSE:
 - given list of objects with properties URL, eFormTitle, addedInfo, date, produce HTML that produces links to the eForms in question.
 */
@@ -805,7 +820,7 @@ function medsObjectListToHTML(eFormsObjectList){
 		`<li style="overflow: hidden; clear:both; position:relative; display:block; white-space:nowrap; ">
 			<a border="0" style="text-decoration:none; width:7px; z-index: 100; background-color: white; position:relative; margin: 0px; padding-bottom: 0px;  vertical-align: bottom; display: inline; float: right; clear:both;"><img id="imgRxZ`+ i + `" src="/oscar/images/clear.gif">&nbsp;&nbsp;</a>
 			<span style=" z-index: 1; position:absolute; margin-right:10px; width:90%; overflow:hidden;  height:1.2em; white-space:nowrap; float:left; text-align:left; ">
-				<a class="links" style="" onmouseover="this.className='linkhover'" onmouseout="this.className='links'" href="#" onclick = "window.open('` + urlAddedMedications2() + `', '_blank', 'height=700,width=800,scrollbars=yes,status=yes');return false;" title="` + eFormObject.med + `">
+				<a class="links" style="" onmouseover="this.className='linkhover'" onmouseout="this.className='links'" href="#" onclick = "window.open('` + urlAddedMedications() + `', '_blank', 'height=700,width=800,scrollbars=yes,status=yes');return false;" title="` + eFormObject.med + `">
 					<span class="currentDrug ">` + eFormObject.med + `</span>
 				</a>
 			</span>
@@ -818,20 +833,137 @@ function medsObjectListToHTML(eFormsObjectList){
 
 
 
+/////////////////////////////////////////////////////
+// Update Tickler Sidebar
+/////////////////////////////////////////////////////
 
 /*
-- returns true if the given selectMed is already within medListSoFar.
-- medListSoFar is an objects with properties date, med.
+NOTE
+- adds the forms that were posted today to the sidebar.
+- for forms posted today that are already listed in the sidebar, my version override it and will be posted instead.
+
+Side note
+- prescriptions with days to expire 30 or greater will be considered a current Drug and colored blue.
+- if days to expire is 29 or less, its class will be expireInReference, and colored
 */
-function isDuplicateMed(selectMed, medListSoFar){
-	for (i = 0; i < medListSoFar.length; i++){
-		const oneMed = medListSoFar[i].med;
-		if (oneMed == selectMed){
+function updateTicklerSidebar() {
+    let xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+            const otherPageXMLText = xmlhttp.responseText;   
+            if (!otherPageXMLText) { 
+                return;
+            }
+            const otherPageHTML = new DOMParser().parseFromString(otherPageXMLText, "text/html");
+
+
+            console.log("----ticklers---");
+            const postedItemsNodeList = otherPageHTML.querySelectorAll("body > form:nth-child(3) > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > table:nth-child(4) > tbody:nth-child(1) > tr"); 
+            const postedItemsTodayList = findTicklersPostedToday(postedItemsNodeList);
+			console.log(postedItemsTodayList);
+
+            addPostedTicklersBlock();
+            $("#postedTicklersBlock").html("");
+			$("#postedTicklersBlock").append(ticklersObjectListToHTML(postedItemsTodayList));
+
+        }
+    };
+	xmlhttp.open("GET", urlAddedTicklers(), false);
+	xmlhttp.send();
+}
+
+/*
+PURPOSE:
+- takes the node list and outputs objects describing each item, with Tickler message, and date.
+- only outputs objects with items that are not duplicates of ticklers already posted in eChart.
+
+*/
+function findTicklersPostedToday(postedItemNodeList){
+    let postedItemObjectList = [];
+    for (let i=1; i < postedItemNodeList.length-1; i++){
+        const currentNode = postedItemNodeList[i];
+        const nodeChildren = currentNode.children;
+
+		if (nodeChildren[0].innerText == "No Tickler Messages"){
+			break;
+		}
+
+        const nodeCreateDate = nodeChildren[5].innerText.replace(/[\r\n\t]/g, "");
+        const nodeMessage = nodeChildren[9].innerText.replace(/[\r\n\t]/g, "");
+
+        if (isMatchingPostedTicklers(nodeMessage)){
+        	continue;
+        }
+
+        const postedItemObject = {
+			createDate: nodeCreateDate,
+			message: nodeMessage
+		}
+        postedItemObjectList.push(postedItemObject);
+        // console.log(postedItemObject);
+    }
+    return postedItemObjectList;
+}
+
+/*
+- returns true if given postedTickler matches any of the ticklers listed in the eChart.
+
+*/
+function isMatchingPostedTicklers(postedTickler){
+	const eChartTicklerList = $("#ticklerlist > li > span:nth-child(2) > a:nth-child(1)"); 
+	// console.log(firstEChartConsultReqID[0].outerHTML);
+	for (i = 0; i < eChartTicklerList.length; i++){
+		eChartTickler = eChartTicklerList[i].innerText;
+		postedTickler = postedTickler.trim();
+		// console.log(postedTickler);
+		// console.log(eChartTickler);
+		
+		if (eChartTickler == postedTickler){
 			return true;
 		}
 	}
+	
 	return false;
 }
+
+
+
+/*
+PURPOSE:
+- given list of objects with properties URL, eFormTitle, addedInfo, date, produce HTML that produces links to the eForms in question.
+*/
+function ticklersObjectListToHTML(itemObjectList){
+	let htmlResult = "";
+	// itemObjectList.length
+	for (let i = 0; i < itemObjectList.length; i++){
+		itemObject = itemObjectList[i];
+		// console.log(itemObject);
+
+
+  //       const postedItemObject = {
+		// 	createDate: nodeCreateDate,
+		// 	message: nodeMessage
+		// }
+
+		htmlResult += 
+		`<li style="overflow: hidden; clear:both; position:relative; display:block; white-space:nowrap; ">
+			<a border="0" style="text-decoration:none; width:7px; z-index: 100; background-color: white; position:relative; margin: 0px; padding-bottom: 0px;  vertical-align: bottom; display: inline; float: right; clear:both;"><img id="imgeformsZ`+ i + `" src="/oscar/images/clear.gif">&nbsp;&nbsp;</a>
+			<span style=" z-index: 1; position:absolute; margin-right:10px; width:90%; overflow:hidden;  height:1.5em; white-space:nowrap; float:left; text-align:left; ">
+				<a class="links" style="" onmouseover="this.className='linkhover'" onmouseout="this.className='links'" href="#" onclick = "window.open('` + urlAddedTicklers() + `', '_blank', 'scrollbars=yes,status=yes');return false;" title="` + itemObject.message + itemObject.createDate + `">` + 
+				itemObject.message  + 
+				`</a>
+			</span>
+			<span style="z-index: 100; background-color: white; overflow:hidden;   position:relative; height:1.5em; white-space:nowrap; float:right; text-align:right;">
+			...<a class="links" style="margin-right: 2px;" onmouseover="this.className='linkhover'" onmouseout="this.className='links'" href="#" onclick = "window.open('`+ urlAddedTicklers() + `', '_blank', 'scrollbars=yes,status=yes');return false;" title="` + itemObject.message + itemObject.createDate + `">` 
+			+ itemObject.createDate + `			
+			</a>
+			</span>
+		</li>`
+	}
+	// console.log(htmlResult);
+	return htmlResult;
+}
+
 
 
 /////////////////////////////////////////////////////
@@ -903,14 +1035,20 @@ function urlAddedConsults(){
 	return newURL;
 }
 
-function urlAddedMedications2(){
+function urlAddedMedications(){
 	var newURL = getURLOrigin() + "oscarRx/choosePatient.do?providerNo=null&demographicNo="+ getDemographicNum() + "&autoSaveOpenerOnOpen=true";
 
 	return newURL;
 }
 
-function urlAddedMedications(){
+function urlPrintedMedications(){
 	var newURL = getURLOrigin() + "/oscarRx/PrintDrugProfile2.jsp?";
+
+	return newURL;
+}
+
+function urlAddedTicklers(){
+	var newURL = getURLOrigin() + "tickler/ticklerDemoMain.jsp?demoview="+ getDemographicNum() + "&parentAjaxId=tickler&appointmentNoForSearchResults=null&updateParent=true";
 
 	return newURL;
 }
