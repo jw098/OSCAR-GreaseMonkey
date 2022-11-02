@@ -43,6 +43,7 @@ window.addEventListener('keydown', function(theEvent) {
 
 window.addEventListener('load', function(){
 	postPatientAgeGender();
+	getAllHistory();
 }, true);
 
 
@@ -132,139 +133,128 @@ function yearsDiff(d1, d2) {
 
 
 
-if(eChartPage.test(currentURL)) {
-	CPPMutationObserver();
-	GM.deleteValue('socHx');
-	GM.deleteValue('pMHx');
-	GM.deleteValue('famHx');
+async function getAllHistory() {
+
+	const [medHistory, socHistory, famHistory] = await Promise.all([getHistory(urlMedHistory()), getHistory(urlSocHistory()), getHistory(urlFamHistory())]);
+
+	const allHistory = "Past Medical History:\n" + medHistory + "\nSocial History:\n" + socHistory + "\nFamily History:\n"  + famHistory;
+	console.log(allHistory);
+
+	const clinInfoTextBox = document.getElementById('clinicalInformation');
+	clinInfoTextBox.value = allHistory;
 }
 
 /*
-PURPOSE:
-- use mutation observer to wait for the desired elements to load before trying to access them.
-
-NOTE:
-- unfortunately, a load event listener doesn't work, since the desired elements seem to load after the page 'loads'.
+- returns a promise that returns the xmlhttp response text
 */
-function CPPMutationObserver(){
-	let mutationObserver = new MutationObserver(function(mutations) {
-
-		// mutations.forEach(function(mutation) {
-		// 	console.log(mutation);
-		// });
-
-		// console.log(mutations);
-		let socHxXPath = "//a[text()='Social History']";
-		let pMHxXPath = "//a[text()='Medical History']";
-		let famHxXPath = "//a[text()='Family History']";
-
-		let socHxBlock = document.evaluate(socHxXPath,document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;		
-		let pMHxBlock = document.evaluate(pMHxXPath,document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;		
-		let famHxBlock = document.evaluate(famHxXPath,document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;		
-		if (!!socHxBlock && !!pMHxBlock && !!famHxBlock){
-			mutationObserver.disconnect();
-
-			
-			getHistoryText("Medical History");
-			getHistoryText("Family History");
-			getHistoryText("Social History");
-		}
+function getXMLHTTP(URL){
+	let myPromise = new Promise(function (resolve){
+		let xmlhttp = new XMLHttpRequest();
+		xmlhttp.open("GET", URL, true);
+		
+		xmlhttp.onload = function(){
+			if (xmlhttp.status == 200) {
+				resolve(xmlhttp.responseText);
+      } 
+			else {
+				reject("File not Found");
+      }
+		};
+		xmlhttp.send();
 	});
 
-	mutationObserver.observe(document.documentElement, {
-	  attributes: true,
-	  subtree: true,
-
-	  // characterData: true,
-	  // childList: true,
-	  // attributeOldValue: true,
-	  // characterDataOldValue: true
-	});
+	return myPromise;
 }
 
-
-/*
-NOTE:
-- the location of Social History, Medical History, etc. aren't necessarily always in the same quadrant. So, need to find its div block first.
-- the text in each history block is extracted and saved to GreaseMonkey with GM.setValue. This allows the value to be accessed across tabs.
-  - GM.setValue and GM.getValue are asynchronous. @grant also needs to be set appropriately.
-*/
-function getHistoryText(history){
-	let historyXPath = "//a[text()='" + history+ "']";
-	let historyDivBlock = document.evaluate(historyXPath,document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;		
-	let historyDivBlockID = historyDivBlock.parentNode.parentNode.parentNode.id;
-
-	let historyNodeList = document.querySelectorAll('#'+historyDivBlockID+'> div:nth-child(3) > ul > li > span > a');
-	// console.log(historyNodeList);
-
-	let historyTextList = "";
-	historyNodeList.forEach(function(e){		
-		// console.log(e.innerText);
-		historyTextList += e.innerText + '\n';
-	});
-
-	(async () => {	
-		switch (history){
-			case "Social History":
-				// console.log(historyTextList);
-				GM.setValue('socHx', historyTextList);
-				// console.log("GM stored -> " + await GM.getValue("socHx", "test"));
-				break;
-			case "Medical History":
-				// console.log(historyTextList);
-				GM.setValue('pMHx', historyTextList);
-				// console.log("GM stored -> " + await GM.getValue("pMHx", "test"));
-				break;
-			case "Family History":
-				// console.log(historyTextList);
-				GM.setValue('famHx', historyTextList);
-				// console.log("GM stored -> " + await GM.getValue("famHx", "test"));
-				break;			
-		}
-	})();
+async function getXMLHTTP2(consultItemURL){
+	let xmlhttp = new XMLHttpRequest();
+	xmlhttp.open("GET", consultItemURL, true);
 	
+	xmlhttp.onload = async function(){
+		if (xmlhttp.status == 200) {
+			// console.log(xmlhttp.responseText);
+      return xmlhttp.responseText;
+    }
+	};
+	xmlhttp.send();
 }
 
-/*
-PURPOSE:
-- get the values stored in GreaseMonkey from the previous tab (E-chart) and paste it in the clinical information text area.
-NOTES:
-- GM.getValue runs asynchronously, and seems to run after the window is loaded.
-*/
-(async () => {	
-	if(consultationPage.test(currentURL)) {
-		// console.log(await GM.getValue("socHx", "test"));
-		// console.log(await GM.getValue("pMHx", "test"));
-		// console.log(await GM.getValue("famHx", "test"));
+async function getHistory(URL) {
+	const otherPageXMLText = await getXMLHTTP(URL);
+	const otherPageHTML = new DOMParser().parseFromString(otherPageXMLText, "text/html");
+  const historyDivList = otherPageHTML.querySelectorAll("body > div"); 
 
-		let	pMHx = await GM.getValue("pMHx", "test");
-		let	socHx = await GM.getValue("socHx", "test");
-		let	famHx = await GM.getValue("famHx", "test");
+  if (historyDivList.length == 0){
+  	return "<no data>\n"
+  }
+  else {
+		const historyText = getHistoryAsText(historyDivList);
+		// console.log(historyText);
 
-		pMHx = checkEmptyHistoryText(pMHx);
-		socHx = checkEmptyHistoryText(socHx);
-		famHx = checkEmptyHistoryText(famHx);
-
-		let allHistoryText = "Past Medical History:\n" + pMHx + 
-			"\nSocial History:\n" + socHx + "\nFamily History:\n" + famHx;
-
-		console.log(allHistoryText);
-		let clinInfoTextBox = document.getElementById('clinicalInformation');
-		clinInfoTextBox.value = allHistoryText;
-	}
-
-})();
-
-/*
-PURPOSE
-- if history text is empty string, return "<no data>"
-*/
-function checkEmptyHistoryText(historyText){
-	if (historyText == ""){
-		return "<no data>\n"
-	}
-	else {
 		return historyText;
-	}
+  }
+
 }
 
+
+function getHistoryAsText(historyDivList){
+	let historyTextAllLines = "";
+	for (i = 0; i < historyDivList.length; i++){
+		const historyDiv = historyDivList[i];
+		const historyTextOneLine = historyDiv.children[0].innerText;
+		historyTextAllLines += historyTextOneLine + "\n";
+	}
+	return historyTextAllLines;
+}
+
+/////////////////////////////////////////////////////
+// get URL, URL elements
+/////////////////////////////////////////////////////
+
+
+function urlSocHistory(){
+	var newURL = getURLOrigin() + "CaseManagementEntry.do?method=issuehistory&demographicNo="+ getDemographicNum() + "&issueIds=65";
+
+	return newURL;
+}
+
+function urlMedHistory(){
+	var newURL = getURLOrigin() + "CaseManagementEntry.do?method=issuehistory&demographicNo="+ getDemographicNum() + "&issueIds=66";
+
+	return newURL;
+}
+
+function urlFamHistory(){
+	var newURL = getURLOrigin() + "CaseManagementEntry.do?method=issuehistory&demographicNo="+ getDemographicNum() + "&issueIds=69";
+
+	return newURL;
+}
+
+
+function urlEChart(){
+	var newURL = getURLOrigin() + "casemgmt/forward.jsp?action=view&demographicNo="+ getDemographicNum();
+
+	return newURL;
+}
+
+function getURLOrigin(){
+	var urlElements = (window.location.pathname.split('/', 2));
+	firstUrlElement = (urlElements.slice(1));
+	return window.location.origin + '/' + firstUrlElement + '/';
+}
+
+https://carefiniti.kai-oscar.com/oscar/oscarEncounter/oscarConsultationRequest/ConsultationFormRequest.jsp?de=8255&teamVar=&appNo=null
+function getDemographicNum(){
+	var params = {}; //Get Params
+	if (location.search) {
+	    var parts = location.search.substring(1).split('&');
+	    for (var i = 0; i < parts.length; i++) {
+	        var nv = parts[i].split('=');
+	        if (!nv[0]) continue;``
+	        params[nv[0]] = nv[1] || true;
+	    }
+	}
+
+	return params.de;
+
+}
