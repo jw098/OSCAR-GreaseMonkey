@@ -888,9 +888,9 @@ function findTicklersPostedToday(postedItemNodeList){
 		if (nodeChildren[0].innerText == "No Tickler Messages"){
 			break;
 		}
-
+		
         const nodeCreateDate = nodeChildren[5].innerText.replace(/[\r\n\t]/g, "");
-        const nodeMessage = nodeChildren[9].innerText.replace(/[\r\n\t]/g, "");
+        const nodeMessage = nodeChildren[9].childNodes[0].textContent.replace(/[\r\n\t]/g, "");
 
         if (isMatchingPostedTicklers(nodeMessage)){
         	continue;
