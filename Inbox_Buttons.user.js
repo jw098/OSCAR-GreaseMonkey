@@ -3,7 +3,7 @@
 // @namespace      oscar
 // @include        */lab/CA/ALL/labDisplay*
 // @include        */dms/inboxManage*
-// @description		Within Inbox: A button that opens all reports (including acknowledged and filed reports).
+// @description		Within Inbox: A button that opens all reports (including acknowledged and filed reports), as well as one that open just new reports.
 // @require   https://ajax.googleapis.com/ajax/libs/jquery/1.3.1/jquery.min.js
 // @grant	   none
 // ==/UserScript==

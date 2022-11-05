@@ -705,10 +705,11 @@ function updateMedicationsSidebar() {
 	/*
 	- The Print meds page doesn't have a unique URL for each patient, so I'm guessing that the server updates that page based on which patient chart is open. But the print page isn't automatically updated to the correct patient the moment you open the eChart. It seems to take 10-30s if you just stay on the eChart. But if you open the Medications page, it seems to update the print page to the correct patient right away.
 	- The below code block requests to open the Medications page. This in turn updates the print meds page to the correct patient right away.
+	- Addendum: Actually, it seems that calling an XHR request to the Medications page causes medications to fail to save and print. Instead of the medication showing up on the Print page, just a blank page. Likewise, no medication is saved.
 	*/
-	let xmlhttp2 = new XMLHttpRequest();
-	xmlhttp2.open("GET", urlAddedMedications(), false);
-	xmlhttp2.send();
+	// let xmlhttp2 = new XMLHttpRequest();
+	// xmlhttp2.open("GET", urlAddedMedications(), false);
+	// xmlhttp2.send();
 
     let xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function() {
