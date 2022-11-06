@@ -70,13 +70,25 @@ Within the E-chart: Alt+1 to Sign/Save/Bill. Alt+2 to Save. Alt+3 to Sign/Save. 
 
 When the CPP pop-up windows are open (e.g. for Social History, Medical History, etc.), Alt+1 to Sign & Save, Escape to close the pop-up window.
 
+## EChart_UpdateSidebar
+
+Within the E-chart: Update the sidebar with newly created eForms, Consults, Ticklers, Medications when posted.
+
+## eForms_KeyboardShortcuts
+
+Within e-forms repository, Alt+A to close. Within an individual e-form: Alt+1 to Submit. Alt+2 to Print & Submit.
+
+## Inbox_Buttons
+
+Within Inbox: A button that opens all reports (including acknowledged and filed reports), as well as one that open just new reports.
+
 ## Inbox_KeyboardShortcuts
 
 Within Inbox: Alt+1 to open first item. 
 
 Within the Lab result: Alt+1 to Acknowledge and label labs with the actual names of each test (as opposed to cryptic labels like HAEM1, CHEM4, etc.). Alt+Q to open E-chart. Alt+W to open Tickler. Alt+Z to only label Labs without acknowleding.
 
-Also, the label of the previous version of the lab result is shown.
+Also, the label of the previous version of the lab result is shown, as well any new results compared to the previous version.
 
 ## Medications_KeyboardShortcuts
 
