@@ -5,7 +5,7 @@
 // @include        */dms/inboxManage*
 // @include        */dms/showDocument*
 // @include        */dms/MultiPageDocDisplay.jsp*
-// @description		Within Inbox: Alt+1 to open first item. Within the Lab result: Alt+1 to Acknowledge and label labs with the actual names of each test (as opposed to cryptic labels like HAEM1, CHEM4, etc.). Alt+Q to open E-chart. Alt+W to open Tickler. Alt+Z to only label Labs without acknowleding. Also, the label of the previous version of the lab result is shown.
+// @description		Within Inbox: Alt+1 to open first item. Within the Lab result: Alt+1 to Acknowledge and label labs with the actual names of each test (as opposed to cryptic labels like HAEM1, CHEM4, etc.). Alt+Q to open E-chart. Alt+W to open Tickler. Alt+Z to only label Labs without acknowleding. Also, the label of the previous version of the lab result is shown, as well any new results compared to the previous version.
 // @require   https://ajax.googleapis.com/ajax/libs/jquery/1.3.1/jquery.min.js
 // @grant	   none
 // ==/UserScript==
@@ -83,11 +83,11 @@ function getNextTarget() {
 PURPOSE:
 - adds a line break before and after the label text.
 - insert another line element for the old label text.
+- and another line inserted for the new labs text.
 */
 $("[id^='labelspan']").before('<br />');
 $("[id^='labelspan']").after('<br />');
-$("[id^='labelspan']").append('<br />');
-$("[id^='labelspan']").append($("<i>"));
+
 
 // $("[id^='labelspan'] > i:first-child").before($("<p>"));
 
@@ -101,7 +101,7 @@ NOTE
 - no need to wait until document loads to run this. 
   - possibly because xmlhttp only runs onreadystatechange?
 */
-getPrevVersionLabel();
+addPrevVersionLabel();
 
 /*
 PURPOSE
@@ -125,8 +125,21 @@ function prevVersionURL(){
 	return prevNode.href;
 }
 
+/*
+PURPOSE:
+- inserts a line for the previous version of this lab result
+- also inserts a line for the new lab results, comparing the current label with the previous version.
+NOTE
+- uses XHR
+- inserts the line elements and line breaks before XHR is called.
+*/
+function addPrevVersionLabel() {
+	$("[id^='labelspan']").append('<br />');
+	$("[id^='labelspan']").append($("<i>"));
+	$("[id^='labelspan']").append('<br />');
+	$("[id^='labelspan']").append($("<i>"));
 
-function getPrevVersionLabel() {
+
     let xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
@@ -138,18 +151,35 @@ function getPrevVersionLabel() {
             const prevVersionHTML = new DOMParser().parseFromString(prevVersionXMLText, "text/html");
             const oldLabelElement = prevVersionHTML.querySelectorAll("span[id^='labelspan_'] > i");
             const oldLabelText = oldLabelElement[0].textContent;
-            const oldLabelResultOnly = oldLabelText.split("Label:")[1];
+            const oldLabelResultOnly = oldLabelText.split("Label: ")[1];
 
             // $("[id^='labelspan']").append('<br />');
             // $("[id^='labelspan']").append($("<i>").html("Old: " + "&nbsp;&nbsp;&nbsp;" + oldLabelResultOnly));
-            $("[id^='labelspan'] > i:nth-child(3)").html("Prev:" + "&nbsp;" + oldLabelResultOnly);
 
+            // assumes that the extra <i> element has already been appended previously.
+            $("[id^='labelspan'] > i:nth-child(3)").html("Prev:" + "&nbsp;" + "&nbsp;" + oldLabelResultOnly);
+            
+            addNewLabsLabel(oldLabelResultOnly);
         }
     };
 	xmlhttp.open("GET", prevVersionURL(), true);
 	xmlhttp.send();
 }
 
+
+function addNewLabsLabel(oldLabelResultText){
+	const currentLabsResultsText = $("[id^='labelspan'] > i:nth-child(1)")[0].innerText.split("Label: ")[1];
+	const currentLabResultsList = currentLabsResultsText.split("/");
+	const oldLabelResultsList = oldLabelResultText.split("/");
+
+	// console.log(currentLabResultsList);
+	// console.log(oldLabelResultsList);
+	let difference = currentLabResultsList.filter(x => !oldLabelResultsList.includes(x));
+	const newResultsText = difference.join("/");
+	// console.log(newResultsText);	
+
+	$("[id^='labelspan'] > i:nth-child(5)").html("New:" + "&nbsp;" + "&nbsp;" + "&nbsp;" + newResultsText);
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Label Labs. Automatically labels lab results.

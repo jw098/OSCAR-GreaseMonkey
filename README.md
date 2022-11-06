@@ -48,6 +48,10 @@ In Billing confirmation page: Alt+1 to Save Bill. Alt+A to scroll to bottom of p
 
 On the BC Billing page, buttons to automatically bill age-related codes and other common codes. 
 
+## CloseCortico
+
+On any OSCAR page, press Escape to close the popup from the Cortico extension.
+
 ## Consultations_KeyboardShortcuts
 
 Within Consultations: Alt+1 to 'Submit Consultation Request'. Alt+W to close the window. Automatically pastes Past Medical history, Social history, and Family history to the Clinical information text area.
