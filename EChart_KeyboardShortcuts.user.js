@@ -77,7 +77,10 @@ function eChartPageHotkeys(theEvent){
 			break;
 		case theAltKey && theKey == 3:  // Sign and Save
 			var theTarget = document.evaluate("id('save')/span/input[contains(@src,'note-save.png')]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
-			theTarget.click();
+			document.getElementById("caseNote_note0").blur();
+			// theTarget.focus();
+			setTimeout(function() {theTarget.click();}, 50);
+			// theTarget.click()
 			break;
 		case theAltKey && theKey == 4: // Exit
 			var theTarget = document.evaluate("id('save')/span/input[contains(@src,'system-log-out.png')]",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
