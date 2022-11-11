@@ -547,7 +547,7 @@ function getConsultantDoctor2(consultItemURL){
 - returns a promise that returns the xmlhttp response text
 */
 function getXMLHTTP(consultItemURL){
-	let myPromise = new Promise(function (resolve){
+	let myPromise = new Promise(function (resolve, reject){
 		let xmlhttp = new XMLHttpRequest();
 		xmlhttp.open("GET", consultItemURL, true);
 		

@@ -2,7 +2,7 @@
 // @name           Inbox_LabelLabs
 // @namespace      oscar
 // @include        */lab/CA/ALL/labDisplay*
-// @description		Within Lab result in Inbox: When acknowledging labs, label the labs with the actual names of each test (as opposed to cryptic labels like HAEM1, CHEM4, etc.). Also, the label of the previous version of the lab result is shown, as well any new results compared to the previous version. Keyboard shortcut Alt+Z to only label Labs without acknowleding.
+// @description		Within Lab result in Inbox: When opening the lab result, automatically label the labs with the actual names of each test (as opposed to cryptic labels like HAEM1, CHEM4, etc.). Also, the label of the previous version of the lab result is shown, as well any new results compared to the previous version. Keyboard shortcut Alt+Z to only label Labs without acknowleding.
 // @require   https://ajax.googleapis.com/ajax/libs/jquery/1.3.1/jquery.min.js
 // @grant	   none
 // ==/UserScript==
@@ -12,38 +12,57 @@
 // Event Listeners
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-labelLabsOnAcknowledge();
+// labelLabsOnAcknowledge();
 
-function labelLabsOnAcknowledge(){
-	let currentURL = window.location.href;
-	const labResultPage = /lab\/CA\/ALL\/labDisplay/
-	var theTarget = document.evaluate("//input[@value='Acknowledge']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
-	theTarget.addEventListener('click', function(theEvent) { labelLabs(); }, true);
-
-}
+// function labelLabsOnAcknowledge(){
+// 	let currentURL = window.location.href;
+// 	const labResultPage = /lab\/CA\/ALL\/labDisplay/
+// 	const theTarget = document.evaluate("//input[@value='Acknowledge']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue;
+// 	if(theTarget != null){
+// 		theTarget.addEventListener('click', function(theEvent) { labelCurrentLabs(); }, true);
+// 	}
+// }
 
 
 window.addEventListener('keydown', function(theEvent) {
 	//theEvent.stopPropagation();
 	//theEvent.preventDefault();
-	// var theKeyCode = theEvent.charCode;// || event.which;
-	// var theKey = String.fromCharCode(theKeyCode);
-	var theKey = theEvent.key;
-	var theAltKey = theEvent.altKey;
-	var theCtrlKey = theEvent.ctrlKey;
-	var theShiftKey= theEvent.shiftKey;
+	// const theKeyCode = theEvent.charCode;// || event.which;
+	// const theKey = String.fromCharCode(theKeyCode);
+	const theKey = theEvent.key;
+	const theAltKey = theEvent.altKey;
+	const theCtrlKey = theEvent.ctrlKey;
+	const theShiftKey= theEvent.shiftKey;
   
 	let currentURL = window.location.href;
 	const labResultPage = /lab\/CA\/ALL\/labDisplay/
 
 	switch(true){
 		case (labResultPage.test(currentURL) && theAltKey && theKey == 'z'):  // Alt+Z: if in lab result page: label lab results.
-			labelLabs();	
+			labelCurrentLabs();	
+			setTimeout(addNewLabsLabel, 300);
 			break;
 	}
 }, true);
 
+///////////////////////////////////////////////////////////////////////////////////////////
+// Labels Lab results on load
+///////////////////////////////////////////////////////////////////////////////////////////
 
+window.addEventListener('load', function(theEvent) {
+	labelAllLabs();
+}, true);
+
+async function labelAllLabs(){
+	$("[id^='labelspan']").append('<br />');
+	$("[id^='labelspan']").append($("<i>"));
+	$("[id^='labelspan']").append('<br />');
+	$("[id^='labelspan']").append($("<i>"));
+
+	labelCurrentLabs();
+	await addPrevVersionLabel();
+	setTimeout(addNewLabsLabel, 300);
+}
 
 /*
 PURPOSE:
@@ -54,7 +73,6 @@ PURPOSE:
 $("[id^='labelspan']").before('<br />');
 $("[id^='labelspan']").after('<br />');
 
-
 // $("[id^='labelspan'] > i:first-child").before($("<p>"));
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -63,20 +81,13 @@ $("[id^='labelspan']").after('<br />');
 
 
 /*
-NOTE
-- no need to wait until document loads to run this. 
-  - possibly because xmlhttp only runs onreadystatechange?
-*/
-addPrevVersionLabel();
-
-/*
 PURPOSE
 - get URL of the previous version of lab results.
 */
 function prevVersionURL(){
 	const allVersionElementOnly = document.querySelectorAll('a[href^="labDisplay.jsp?segmentID"]');
-	if (allVersionElementOnly == null){
-		return "";
+	if (allVersionElementOnly.length == 0){
+		throw new Error("Previous version URL not Found");
 	}
 	const allVersions = allVersionElementOnly[0].parentNode.childNodes;
 
@@ -88,7 +99,13 @@ function prevVersionURL(){
 		}
 		prevNode = currentNode;
 	}
-	return prevNode.href;
+
+	if (prevNode == ""){
+		throw new Error("Previous version URL not Found");
+	} else {
+		console.log(prevNode.href)
+		return prevNode.href;
+	}
 }
 
 /*
@@ -98,37 +115,47 @@ NOTE
 - uses XHR
 - inserts the line elements and line breaks before XHR is called.
 */
-function addPrevVersionLabel() {
-	$("[id^='labelspan']").append('<br />');
-	$("[id^='labelspan']").append($("<i>"));
-	$("[id^='labelspan']").append('<br />');
-	$("[id^='labelspan']").append($("<i>"));
+async function addPrevVersionLabel() {
+	try {
+		const prevVersionXMLText = await getXMLHTTP(prevVersionURL());
+		const prevVersionHTML = new DOMParser().parseFromString(prevVersionXMLText, "text/html");
+		const oldLabelElement = prevVersionHTML.querySelectorAll("span[id^='labelspan_'] > i");
+		const oldLabelText = oldLabelElement[0].textContent;
+		const oldLabelResultOnly = oldLabelText.split("Label: ")[1];
+
+		// $("[id^='labelspan']").append('<br />');
+		// $("[id^='labelspan']").append($("<i>").html("Old: " + "&nbsp;&nbsp;&nbsp;" + oldLabelResultOnly));
+
+		// assumes that the extra <i> element has already been appended previously.
+		$("[id^='labelspan'] > i:nth-child(3)").html("Prev:" + "&nbsp;" + "&nbsp;" + oldLabelResultOnly);
+	} catch(err){
+		console.error(err);
+	}
+	
+}
 
 
-    let xmlhttp = new XMLHttpRequest();
-    xmlhttp.onreadystatechange = function() {
-        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-            const prevVersionXMLText = xmlhttp.responseText;   
-            if (!prevVersionXMLText) { 
-                return;
-            }
-
-            const prevVersionHTML = new DOMParser().parseFromString(prevVersionXMLText, "text/html");
-            const oldLabelElement = prevVersionHTML.querySelectorAll("span[id^='labelspan_'] > i");
-            const oldLabelText = oldLabelElement[0].textContent;
-            const oldLabelResultOnly = oldLabelText.split("Label: ")[1];
-
-            // $("[id^='labelspan']").append('<br />');
-            // $("[id^='labelspan']").append($("<i>").html("Old: " + "&nbsp;&nbsp;&nbsp;" + oldLabelResultOnly));
-
-            // assumes that the extra <i> element has already been appended previously.
-            $("[id^='labelspan'] > i:nth-child(3)").html("Prev:" + "&nbsp;" + "&nbsp;" + oldLabelResultOnly);
-            
-            
-        }
-    };
-	xmlhttp.open("GET", prevVersionURL(), true);
-	xmlhttp.send();
+/*
+- returns a promise that returns the xmlhttp response text
+*/
+function getXMLHTTP(givenURL){
+	return new Promise(function (resolve, reject){
+		let xmlhttp = new XMLHttpRequest();
+		xmlhttp.open("GET", givenURL, true);
+		
+		xmlhttp.onload = function(){
+			if (xmlhttp.status == 200) {
+				resolve(xmlhttp.responseText);
+      		} 
+			else {
+				reject(new Error("File not Found"));
+      		}
+		};
+		xmlhttp.onerror = function () {
+			reject(new Error("File not Found"));
+		  };
+		xmlhttp.send();
+	});
 }
 
 
@@ -159,7 +186,7 @@ PURPOSE:
 - labels the current lab result
 - then posts the new labs.
  */
-function labelLabs(){
+function labelCurrentLabs(){
 
 	// Gets all lab results from the XML, which are either in table/tbody/tr/td[1]/a[1] or table/tbody/tr/td[1]/span
 	const allLabResults = document.querySelectorAll('table[name="tblDiscs"]>tbody>tr>td:first-child>:is(a:first-child, span)');
@@ -170,7 +197,7 @@ function labelLabs(){
 	// console.log(keyLabResults);
 	
 	showKeyLabResultsTextBox(keyLabResults);
-	setTimeout(addNewLabsLabel, 300);
+	
 
 }
 
@@ -344,14 +371,32 @@ function renameLabResult(strOldName){
 		case 'General Information':
 			strNewName='Gen Info';
 			break;
+		case 'MRI':
+		case 'CT Scan':
+		case 'Ultrasound':
+		case 'Interventional Radiology':
+		case 'X-Ray':
+			strNewName=getStringDiagnosticResult();
+			break;
 		case '':
 			strNewName='';
-			break;				
+			break;														
 		default:
 			return renameLabResultInexactMatch(strOldName);
 			break;
 	}
 	return strNewName;
+}
+
+/* 
+Note: for diagnostic results, search for the string 'Procedure'.
+*/
+function getStringDiagnosticResult(){
+	const xpath = "//span[contains(text(), 'Procedure')]";
+	const matchingElement = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+	const diagResultText = matchingElement.innerText.split('Procedure: ')[1];
+	console.log(diagResultText);
+	return diagResultText;
 }
 
 function renameLabResultInexactMatch(strOldName){
